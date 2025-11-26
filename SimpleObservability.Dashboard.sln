@@ -1,0 +1,73 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11217.181
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BAABF570-B77E-4F9D-8425-89CC43FB38F9}"
+	ProjectSection(SolutionItems) = preProject
+		.dockerignore = .dockerignore
+		.editorconfig = .editorconfig
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		ChangeLog.md = ChangeLog.md
+		coverlet.runsettings = coverlet.runsettings
+		Directory.Build.props = Directory.Build.props
+		Directory.Packages.props = Directory.Packages.props
+		docker-compose.yml = docker-compose.yml
+		global.json = global.json
+		icon.jpg = icon.jpg
+		LICENSE.md = LICENSE.md
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{7E137BB1-1B3D-4B0C-A121-51C21928DB0E}"
+	ProjectSection(SolutionItems) = preProject
+		.github\CODE_OF_CONDUCT.md = .github\CODE_OF_CONDUCT.md
+		.github\CONTRIBUTING.md = .github\CONTRIBUTING.md
+		.github\copilot-instructions.md = .github\copilot-instructions.md
+		.github\dependabot.yml = .github\dependabot.yml
+		.github\FUNDING.yml = .github\FUNDING.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{D869E787-472D-440A-9F57-B05F7A9766E6}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\MergeToMain.yml = .github\workflows\MergeToMain.yml
+		.github\workflows\PullRequest.yml = .github\workflows\PullRequest.yml
+		.github\workflows\Release.yml = .github\workflows\Release.yml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorldDomination.SimpleObservability.SampleServiceWebApi", "code\WorldDomination.SimpleObservability.SampleServiceWebApi\WorldDomination.SimpleObservability.SampleServiceWebApi.csproj", "{F37AEE3D-7FF5-27DF-A510-3A2D608C3B29}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorldDomination.SimpleObservability.Dashboard", "code\WorldDomination.SimpleObservability.Dashboard\WorldDomination.SimpleObservability.Dashboard.csproj", "{351D427E-BE00-A500-6A34-108D305140A3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorldDomination.SimpleObservability.Dashboard.Tests", "code\WorldDomination.SimpleObservability.Dashboard.Tests\WorldDomination.SimpleObservability.Dashboard.Tests.csproj", "{A41FCEC2-530E-8089-4F2B-27B425B70419}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F37AEE3D-7FF5-27DF-A510-3A2D608C3B29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F37AEE3D-7FF5-27DF-A510-3A2D608C3B29}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F37AEE3D-7FF5-27DF-A510-3A2D608C3B29}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F37AEE3D-7FF5-27DF-A510-3A2D608C3B29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{351D427E-BE00-A500-6A34-108D305140A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{351D427E-BE00-A500-6A34-108D305140A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{351D427E-BE00-A500-6A34-108D305140A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{351D427E-BE00-A500-6A34-108D305140A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A41FCEC2-530E-8089-4F2B-27B425B70419}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A41FCEC2-530E-8089-4F2B-27B425B70419}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A41FCEC2-530E-8089-4F2B-27B425B70419}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A41FCEC2-530E-8089-4F2B-27B425B70419}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D869E787-472D-440A-9F57-B05F7A9766E6} = {7E137BB1-1B3D-4B0C-A121-51C21928DB0E}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {986B95B4-4B70-4528-8C6E-FBA3E818BCED}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,41 @@
+{
+  "Dashboard": {
+    "environments": [
+      "DEV",
+      "UAT",
+      "PROD"
+    ],
+    "services": [
+      {
+        "name": "Payment API",
+        "environment": "DEV",
+        "healthCheckUrl": "http://sample-service-dev:8080/healthz",
+        "description": "Payment service in development",
+        "enabled": true
+      },
+      {
+        "name": "Payment API",
+        "environment": "UAT",
+        "healthCheckUrl": "http://sample-service-uat:8080/healthz",
+        "description": "Payment service in UAT",
+        "enabled": true
+      },
+      {
+        "name": "Payment API",
+        "environment": "PROD",
+        "healthCheckUrl": "http://sample-service-prod:8080/healthz",
+        "description": "Payment service in production",
+        "enabled": true
+      },
+      {
+        "name": "User API",
+        "environment": "DEV",
+        "healthCheckUrl": "http://user-service-dev:8080/healthz",
+        "description": "User service in development",
+        "enabled": true
+      }
+    ],
+    "refreshIntervalSeconds": 15,
+    "timeoutSeconds": 5
+  }
+}

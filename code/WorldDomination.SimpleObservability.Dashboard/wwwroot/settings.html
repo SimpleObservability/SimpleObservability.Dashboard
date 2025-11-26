@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Simple Observability Dashboard</title>
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/settings.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚙️ Dashboard Settings</h1>
+            <div class="nav-links">
+                <a href="/">← Back to Dashboard</a>
+            </div>
+        </header>
+
+        <div class="settings-container">
+            <div id="alertContainer"></div>
+
+            <!-- System Settings Section -->
+            <div class="section">
+                <h2>
+                    System Settings
+                    <span class="auto-save-status" id="autoSaveStatus"></span>
+                </h2>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="systemTimeout">Default Timeout (seconds)</label>
+                        <input type="number" id="systemTimeout" min="1" max="300" value="5">
+                        <div class="form-hint">Default timeout for health check requests. Individual services can override this.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="refreshInterval">Dashboard Refresh Interval (seconds)</label>
+                        <input type="number" id="refreshInterval" min="5" max="600" value="30">
+                        <div class="form-hint">How often the dashboard auto-refreshes.</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Environment Display Order</label>
+                    <div class="environment-order-list" id="environmentOrderList">
+                        <div class="order-hint">Drag and drop to reorder environments. Environments not listed will appear last alphabetically.</div>
+                    </div>
+                    <div class="add-environment-row">
+                        <input type="text" id="newEnvironmentName" placeholder="Enter environment name (e.g., DEV, UAT, PROD)">
+                        <button class="button button-success" onclick="addEnvironmentToOrder()">Add</button>
+                    </div>
+                    <div class="form-hint">Define the order in which environments appear in the dashboard. Changes are auto-saved.</div>
+                </div>
+            </div>
+
+            <!-- Services Section -->
+            <div class="section">
+                <h2>Services</h2>
+                
+                <button class="button button-success" onclick="openAddServiceModal()">
+                    + Add New Service
+                </button>
+
+                <div class="service-list" id="serviceList">
+                    <p style="text-align: center; color: #6b7280; padding: 20px;">Loading services...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Service Modal -->
+    <div id="serviceModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Add Service</h3>
+                <button class="close-button" onclick="closeServiceModal()">×</button>
+            </div>
+
+            <form id="serviceForm" onsubmit="saveService(event)">
+                <input type="hidden" id="originalServiceName">
+                <input type="hidden" id="originalEnvironment">
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="serviceName">Service Name *</label>
+                        <input type="text" id="serviceName" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="serviceEnvironment">Environment *</label>
+                        <input type="text" id="serviceEnvironment" placeholder="e.g., DEV, UAT, PROD" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="serviceUrl">Health Check URL *</label>
+                    <input type="url" id="serviceUrl" placeholder="https://example.com/healthz" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="serviceDescription">Description</label>
+                    <textarea id="serviceDescription" rows="3" placeholder="Optional description of this service"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="serviceTimeout">Service-Specific Timeout (seconds)</label>
+                    <input type="number" id="serviceTimeout" min="1" max="300" placeholder="Leave empty to use system default">
+                    <div class="form-hint">Override the system default timeout for this specific service. Leave empty to use the system default.</div>
+                </div>
+
+                <div class="checkbox-group form-group">
+                    <input type="checkbox" id="serviceEnabled" checked>
+                    <label for="serviceEnabled">Enabled (monitor this service)</label>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="button button-primary">Save Service</button>
+                    <button type="button" class="button button-secondary" onclick="closeServiceModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/js/common.js"></script>
+    <script src="/js/settings.js"></script>
+</body>
+</html>

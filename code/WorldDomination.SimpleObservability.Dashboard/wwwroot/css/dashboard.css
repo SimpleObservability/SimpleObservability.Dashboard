@@ -1,0 +1,221 @@
+/* Dashboard-specific styles. */
+
+.refresh-info {
+    display: inline-block;
+    font-size: 0.85rem;
+    opacity: 0.9;
+}
+
+.countdown {
+    font-weight: 600;
+    min-width: 30px;
+    display: inline-block;
+}
+
+.dashboard {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    overflow: hidden;
+}
+
+.dashboard-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.dashboard-table th {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 15px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.dashboard-table th:first-child {
+    width: 120px;
+}
+
+.dashboard-table td {
+    padding: 15px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.dashboard-table tr:last-child td {
+    border-bottom: none;
+}
+
+.dashboard-table tr:hover {
+    background: #f9fafb;
+}
+
+.environment-cell {
+    font-weight: 600;
+    color: #374151;
+    font-size: 0.9rem;
+}
+
+.service-card {
+    position: relative;
+    padding: 12px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.service-card.healthy {
+    background: #d1fae5;
+    border: 2px solid #10b981;
+}
+
+.service-card.degraded {
+    background: #fef3c7;
+    border: 2px solid #f59e0b;
+}
+
+.service-card.unhealthy {
+    background: #fee2e2;
+    border: 2px solid #ef4444;
+}
+
+.service-card.error {
+    background: #fee2e2;
+    border: 2px solid #ef4444;
+}
+
+.service-card.disabled {
+    background: #f3f4f6;
+    border: 2px solid #9ca3af;
+}
+
+.service-name {
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin-bottom: 4px;
+    color: #1f2937;
+}
+
+.service-version {
+    font-size: 0.8rem;
+    color: #6b7280;
+    font-family: 'Courier New', monospace;
+}
+
+.service-status {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-top: 4px;
+    text-transform: uppercase;
+}
+
+.status-healthy {
+    background: #10b981;
+    color: white;
+}
+
+.status-degraded {
+    background: #f59e0b;
+    color: white;
+}
+
+.status-unhealthy {
+    background: #ef4444;
+    color: white;
+}
+
+.error-message {
+    color: #dc2626;
+    font-size: 0.75rem;
+    margin-top: 4px;
+    font-style: italic;
+}
+
+.metadata-info {
+    font-size: 0.7rem;
+    color: #6b7280;
+    margin-top: 4px;
+}
+
+.empty-cell {
+    text-align: center;
+    color: #9ca3af;
+    font-style: italic;
+    font-size: 0.85rem;
+}
+
+/* Tooltip styles. */
+.tooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 10px;
+    padding: 12px;
+    background-color: #1f2937;
+    color: #f9fafb;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    font-size: 0.875rem;
+    white-space: nowrap;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease-in-out;
+    min-width: 200px;
+}
+
+.service-card:hover .tooltip {
+    opacity: 1;
+}
+
+.tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #1f2937;
+}
+
+.tooltip-title {
+    font-weight: 600;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #4b5563;
+    color: #60a5fa;
+}
+
+.tooltip-content {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.tooltip-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.tooltip-key {
+    font-weight: 500;
+    color: #9ca3af;
+}
+
+.tooltip-value {
+    color: #f9fafb;
+    text-align: right;
+}
+
+.tooltip-empty {
+    color: #6b7280;
+    font-style: italic;
+    text-align: center;
+}

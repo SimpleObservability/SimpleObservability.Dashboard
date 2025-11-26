@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Observability Dashboard</title>
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔍 Simple Observability Dashboard</h1>
+            <div class="header-info">
+                <div class="last-updated">
+                    Last updated: <span id="lastUpdated">Loading...</span>
+                </div>
+                <div class="refresh-info">
+                    Next refresh in: <span id="countdown" class="countdown">--</span>s
+                </div>
+                <a href="/settings.html" class="settings-link">⚙️ Settings</a>
+            </div>
+        </header>
+
+        <div class="dashboard">
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                <p>Loading health data...</p>
+            </div>
+            <table id="dashboardTable" class="dashboard-table" style="display: none;">
+                <thead>
+                    <tr id="tableHeader">
+                        <th>Environment</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                </tbody>
+            </table>
+        </div>
+
+        <footer>
+            <p>Simple Observability Dashboard | <a href="/api/health" style="color: white;">API Endpoint</a></p>
+        </footer>
+    </div>
+
+    <script src="/js/common.js"></script>
+    <script src="/js/dashboard.js"></script>
+</body>
+</html>

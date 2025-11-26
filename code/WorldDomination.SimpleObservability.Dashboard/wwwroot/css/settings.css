@@ -1,0 +1,143 @@
+/* Settings page-specific styles. */
+
+.settings-container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    padding: 30px;
+}
+
+.section {
+    margin-bottom: 40px;
+}
+
+.section:last-child {
+    margin-bottom: 0;
+}
+
+.service-list {
+    margin-top: 20px;
+}
+
+.service-item {
+    background: #f9fafb;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    transition: border-color 0.3s ease;
+}
+
+.service-item:hover {
+    border-color: #667eea;
+}
+
+.service-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.service-title {
+    font-weight: 600;
+    color: #374151;
+    font-size: 1rem;
+}
+
+.service-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.service-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+
+.service-detail-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.service-detail-label {
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 2px;
+}
+
+.environment-order-list {
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 10px;
+    min-height: 100px;
+}
+
+.environment-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    margin: 4px;
+    font-size: 0.85rem;
+    cursor: move;
+    user-select: none;
+}
+
+.environment-tag:hover {
+    opacity: 0.9;
+}
+
+.environment-tag .remove-btn {
+    background: rgba(255, 255, 255, 0.3);
+    border: none;
+    color: white;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 0.7rem;
+    line-height: 1;
+    padding: 0;
+    transition: background 0.2s ease;
+}
+
+.environment-tag .remove-btn:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.environment-tag.dragging {
+    opacity: 0.5;
+}
+
+.add-environment-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.add-environment-row input {
+    flex: 1;
+}
+
+.order-hint {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-top: 8px;
+    font-style: italic;
+}
+
+.auto-save-status {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin-left: 10px;
+    font-style: italic;
+}

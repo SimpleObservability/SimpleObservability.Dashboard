@@ -1,0 +1,27 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="90" fill="#1e293b"/>
+  
+  <!-- Heartbeat/pulse line showing health states -->
+  <!-- Healthy (green) - flat at top -->
+  <path d="M 30 100 L 75 100" 
+        fill="none" 
+        stroke="#10b981" 
+        stroke-width="7" 
+        stroke-linecap="round"/>
+  
+  <!-- Drop to failed (red) -->
+  <path d="M 75 100 L 85 130 L 115 130 L 125 100" 
+        fill="none" 
+        stroke="#ef4444" 
+        stroke-width="7" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"/>
+  
+  <!-- Back to healthy (green) - flat -->
+  <path d="M 125 100 L 170 100" 
+        fill="none" 
+        stroke="#10b981" 
+        stroke-width="7" 
+        stroke-linecap="round"/>
+</svg>
