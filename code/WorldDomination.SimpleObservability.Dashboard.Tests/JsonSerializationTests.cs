@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc.Testing;
+using System.Text.Json.Serialization;
 
 namespace WorldDomination.SimpleObservability.Dashboard.Tests;
 
@@ -23,7 +24,7 @@ public class JsonSerializationTests : IClassFixture<WebApplicationFactory<Progra
     private static readonly JsonSerializerOptions _camelCaseWithEnumOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
+        Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
     };
 
     public JsonSerializationTests(WebApplicationFactory<Program> factory)
@@ -189,7 +190,7 @@ public class JsonSerializationTests : IClassFixture<WebApplicationFactory<Progra
     }
 
     [Fact]
-    public async Task HealthMetadataDeserialization_ShouldHandleCamelCaseJson()
+    public async Task HealthMetadataDeserialization_WithNumericStatus_ShouldHandleCamelCaseJson()
     {
         // Arrange.
         var camelCaseJson = """
@@ -197,11 +198,11 @@ public class JsonSerializationTests : IClassFixture<WebApplicationFactory<Progra
           "serviceName": "Test Service",
           "version": "1.2.3",
           "environment": "Production",
-          "status": "healthy",
+          "status": 0,
           "timestamp": "2024-01-15T10:30:00Z",
           "description": "All systems operational",
           "hostName": "test-server-01",
-          "uptime": "P1DT2H30M",
+          "uptime": "1.02:30:00",
           "additionalMetadata": {
             "database": "Connected",
             "cache": "Redis"
@@ -223,6 +224,93 @@ public class JsonSerializationTests : IClassFixture<WebApplicationFactory<Progra
         Assert.NotNull(metadata.AdditionalMetadata);
         Assert.Equal("Connected", metadata.AdditionalMetadata["database"]);
         Assert.Equal("Redis", metadata.AdditionalMetadata["cache"]);
+    }
+
+    [Fact]
+    public async Task HealthMetadataDeserialization_WithStringStatus_ShouldHandleCamelCaseJson()
+    {
+        // Arrange.
+        var camelCaseJson = """
+        {
+          "serviceName": "Test Service",
+          "version": "1.2.3",
+          "environment": "Production",
+          "status": "Healthy",
+          "timestamp": "2024-01-15T10:30:00Z",
+          "description": "All systems operational",
+          "hostName": "test-server-01",
+          "uptime": "1.02:30:00",
+          "additionalMetadata": {
+            "database": "Connected",
+            "cache": "Redis"
+          }
+        }
+        """;
+
+        // Act.
+        var metadata = JsonSerializer.Deserialize<HealthMetadata>(camelCaseJson, _caseInsensitiveOptions);
+
+        // Assert.
+        Assert.NotNull(metadata);
+        Assert.Equal("Test Service", metadata.ServiceName);
+        Assert.Equal("1.2.3", metadata.Version);
+        Assert.Equal("Production", metadata.Environment);
+        Assert.Equal(HealthStatus.Healthy, metadata.Status);
+        Assert.Equal("All systems operational", metadata.Description);
+        Assert.Equal("test-server-01", metadata.HostName);
+        Assert.NotNull(metadata.AdditionalMetadata);
+        Assert.Equal("Connected", metadata.AdditionalMetadata["database"]);
+        Assert.Equal("Redis", metadata.AdditionalMetadata["cache"]);
+    }
+
+    [Theory]
+    [InlineData("Healthy", HealthStatus.Healthy)]
+    [InlineData("healthy", HealthStatus.Healthy)]
+    [InlineData("HEALTHY", HealthStatus.Healthy)]
+    [InlineData("Degraded", HealthStatus.Degraded)]
+    [InlineData("degraded", HealthStatus.Degraded)]
+    [InlineData("Unhealthy", HealthStatus.Unhealthy)]
+    [InlineData("unhealthy", HealthStatus.Unhealthy)]
+    public async Task HealthMetadataDeserialization_WithVariousStatusStrings_ShouldSucceed(string statusValue, HealthStatus expectedStatus)
+    {
+        // Arrange.
+        var camelCaseJson = $$"""
+        {
+          "serviceName": "Test Service",
+          "version": "1.2.3",
+          "status": "{{statusValue}}"
+        }
+        """;
+
+        // Act.
+        var metadata = JsonSerializer.Deserialize<HealthMetadata>(camelCaseJson, _caseInsensitiveOptions);
+
+        // Assert.
+        Assert.NotNull(metadata);
+        Assert.Equal(expectedStatus, metadata.Status);
+    }
+
+    [Theory]
+    [InlineData(0, HealthStatus.Healthy)]
+    [InlineData(1, HealthStatus.Degraded)]
+    [InlineData(2, HealthStatus.Unhealthy)]
+    public async Task HealthMetadataDeserialization_WithNumericStatusValues_ShouldSucceed(int statusValue, HealthStatus expectedStatus)
+    {
+        // Arrange.
+        var camelCaseJson = $$"""
+        {
+          "serviceName": "Test Service",
+          "version": "1.2.3",
+          "status": {{statusValue}}
+        }
+        """;
+
+        // Act.
+        var metadata = JsonSerializer.Deserialize<HealthMetadata>(camelCaseJson, _caseInsensitiveOptions);
+
+        // Assert.
+        Assert.NotNull(metadata);
+        Assert.Equal(expectedStatus, metadata.Status);
     }
 
     [Fact]
@@ -265,7 +353,7 @@ public class JsonSerializationTests : IClassFixture<WebApplicationFactory<Progra
     }
 
     [Fact]
-    public async Task HealthStatusEnum_ShouldSerializeToCamelCase()
+    public async Task HealthStatusEnum_ShouldSerializeAsString()
     {
         // Arrange.
         var metadata = new HealthMetadata
@@ -276,10 +364,11 @@ public class JsonSerializationTests : IClassFixture<WebApplicationFactory<Progra
         };
 
         // Act.
-        var json = JsonSerializer.Serialize(metadata, _camelCaseWithEnumOptions);
+        var json = JsonSerializer.Serialize(metadata, _camelCaseOptions);
 
         // Assert.
-        Assert.Contains("\"status\":\"degraded\"", json.Replace(" ", ""));
-        Assert.DoesNotContain("\"Degraded\"", json);
+        // Our custom converter writes PascalCase enum values for clarity and readability.
+        Assert.Contains("\"status\":\"Degraded\"", json.Replace(" ", ""));
+        Assert.DoesNotContain("\"status\":1", json.Replace(" ", ""));
     }
 }

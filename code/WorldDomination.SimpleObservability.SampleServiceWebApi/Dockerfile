@@ -11,22 +11,20 @@ COPY ["Directory.Build.props", "./"]
 COPY ["Directory.Packages.props", "./"]
 
 # Copy project files.
-COPY ["code/Core/WorldDomination.SimpleObservability/WorldDomination.SimpleObservability.csproj", "Core/WorldDomination.SimpleObservability/"]
-COPY ["code/WebApi/WorldDomination.SimpleObservability.SampleServiceWebApi/WorldDomination.SimpleObservability.SampleServiceWebApi.csproj", "WebApi/WorldDomination.SimpleObservability.SampleServiceWebApi/"]
+COPY ["code/WorldDomination.SimpleObservability.SampleServiceWebApi/WorldDomination.SimpleObservability.SampleServiceWebApi.csproj", "WorldDomination.SimpleObservability.SampleServiceWebApi/"]
 
 # Restore dependencies.
-RUN dotnet restore "WebApi/WorldDomination.SimpleObservability.SampleServiceWebApi/WorldDomination.SimpleObservability.SampleServiceWebApi.csproj"
+RUN dotnet restore "WorldDomination.SimpleObservability.SampleServiceWebApi/WorldDomination.SimpleObservability.SampleServiceWebApi.csproj"
 
 # Copy everything else.
-COPY code/Core/WorldDomination.SimpleObservability/. Core/WorldDomination.SimpleObservability/
-COPY code/WebApi/WorldDomination.SimpleObservability.SampleServiceWebApi/. WebApi/WorldDomination.SimpleObservability.SampleServiceWebApi/
+COPY code/WorldDomination.SimpleObservability.SampleServiceWebApi/. WorldDomination.SimpleObservability.SampleServiceWebApi/
 
 # Build.
-WORKDIR "/src/WebApi/WorldDomination.SimpleObservability.SampleServiceWebApi"
-RUN dotnet build "WorldDomination.SimpleObservability.SampleServiceWebApi.csproj" -c Release -o /app/build
+WORKDIR /src/WorldDomination.SimpleObservability.SampleServiceWebApi
+RUN dotnet build "WorldDomination.SimpleObservability.SampleServiceWebApi.csproj" -c Release --no-restore -o /app/build 
 
 FROM build AS publish
-RUN dotnet publish "WorldDomination.SimpleObservability.SampleServiceWebApi.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "WorldDomination.SimpleObservability.SampleServiceWebApi.csproj" -c Release --no-restore -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app

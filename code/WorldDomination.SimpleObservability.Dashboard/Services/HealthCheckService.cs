@@ -1,7 +1,6 @@
-using System.Net;
 using System.Net.Sockets;
 using System.Text.Json;
-using WorldDomination.SimpleObservability;
+using WorldDomination.SimpleObservability.Dashboard.Configuration;
 
 namespace WorldDomination.SimpleObservability.Dashboard.Services;
 
@@ -10,27 +9,21 @@ namespace WorldDomination.SimpleObservability.Dashboard.Services;
 /// </summary>
 public class HealthCheckService : IHealthCheckService
 {
-    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IHealthHttpClient _healthHttpClient;
     private readonly DashboardConfiguration _configuration;
     private readonly ILogger<HealthCheckService> _logger;
-    private readonly JsonSerializerOptions _jsonOptions;
 
     public HealthCheckService(
-        IHttpClientFactory httpClientFactory,
+        IHealthHttpClient healthHttpClient,
         DashboardConfiguration configuration,
         ILogger<HealthCheckService> logger)
     {
-        _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
+        _healthHttpClient = healthHttpClient ?? throw new ArgumentNullException(nameof(healthHttpClient));
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-
-        _jsonOptions = new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        };
     }
 
-    public async Task<HealthCheckResult> CheckHealthAsync(ServiceEndpoint serviceEndpoint, CancellationToken cancellationToken = default)
+    public async Task<HealthCheckResult> CheckHealthAsync(ServiceEndpoint serviceEndpoint, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(serviceEndpoint);
 
@@ -46,14 +39,15 @@ public class HealthCheckService : IHealthCheckService
             };
         }
 
-        var httpClient = _httpClientFactory.CreateClient("HealthCheck");
-        httpClient.Timeout = TimeSpan.FromSeconds(serviceEndpoint.TimeoutSeconds ?? _configuration.TimeoutSeconds);
+        var timeout = TimeSpan.FromSeconds(serviceEndpoint.TimeoutSeconds ?? _configuration.TimeoutSeconds);
+
+        HttpResponseMessage response;
 
         try
         {
             _logger.LogDebug("Checking health for {ServiceName} at {Url}.", serviceEndpoint.Name, serviceEndpoint.HealthCheckUrl);
 
-            var response = await httpClient.GetAsync(serviceEndpoint.HealthCheckUrl, cancellationToken);
+            response = await _healthHttpClient.GetAsync(serviceEndpoint.HealthCheckUrl, timeout, cancellationToken);
 
             if (response.IsSuccessStatusCode)
             {
@@ -76,7 +70,7 @@ public class HealthCheckService : IHealthCheckService
                 
                 try
                 {
-                    healthMetadata = JsonSerializer.Deserialize<HealthMetadata>(content, _jsonOptions);
+                    healthMetadata = JsonSerializer.Deserialize<HealthMetadata>(content, JsonConfiguration.DefaultOptions);
                 }
                 catch (JsonException jsonEx)
                 {
@@ -177,7 +171,7 @@ public class HealthCheckService : IHealthCheckService
         }
     }
 
-    public async Task<Dictionary<string, HealthCheckResult>> CheckAllHealthAsync(CancellationToken cancellationToken = default)
+    public async Task<Dictionary<string, HealthCheckResult>> CheckAllHealthAsync(CancellationToken cancellationToken)
     {
         var results = new Dictionary<string, HealthCheckResult>();
         var tasks = _configuration.Services

@@ -20,21 +20,26 @@ builder.Configuration.AddDashboardSettingsFile();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-// Configure JSON serialization to use camelCase.
+// Configure JSON serialization to use centralized options.
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
-    options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-    options.SerializerOptions.PropertyNameCaseInsensitive = true;
-    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
-    options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+    options.SerializerOptions.PropertyNamingPolicy = JsonConfiguration.DefaultOptions.PropertyNamingPolicy;
+    options.SerializerOptions.PropertyNameCaseInsensitive = JsonConfiguration.DefaultOptions.PropertyNameCaseInsensitive;
+    options.SerializerOptions.DefaultIgnoreCondition = JsonConfiguration.DefaultOptions.DefaultIgnoreCondition;
+    
+    foreach (var converter in JsonConfiguration.DefaultOptions.Converters)
+    {
+        options.SerializerOptions.Converters.Add(converter);
+    }
 });
 
 // Configure HttpClient for health checks.
-builder.Services.AddHttpClient("HealthCheck")
+builder.Services.AddHttpClient<HealthHttpClient>()
     .ConfigureHttpClient(client =>
     {
         client.DefaultRequestHeaders.Add("User-Agent", "SimpleObservability/1.0");
     });
+builder.Services.AddScoped<IHealthHttpClient, HealthHttpClient>();
 
 // Load dashboard configuration from configuration sources.
 var dashboardConfig = DashboardConfigurationLoader.Load(builder.Configuration);
@@ -44,9 +49,9 @@ var configHolder = new ConfigurationHolder { Config = dashboardConfig };
 builder.Services.AddSingleton(configHolder);
 
 // Register a factory that always returns the current configuration from the holder.
-builder.Services.AddScoped<DashboardConfiguration>(sp => 
+builder.Services.AddScoped(serviceProvider => 
 {
-    var holder = sp.GetRequiredService<ConfigurationHolder>();
+    var holder = serviceProvider.GetRequiredService<ConfigurationHolder>();
     return holder.Config;
 });
 
@@ -121,15 +126,8 @@ app.MapPut("/api/config", async (HttpContext context, ConfigurationHolder config
     // Reset the stream position so it can be read again for deserialization.
     context.Request.Body.Position = 0;
 
-    // Create JSON options that accept both camelCase and PascalCase.
-    var jsonOptions = new JsonSerializerOptions
-    {
-        PropertyNameCaseInsensitive = true,
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-    };
-
     // Manually deserialize to see what we get.
-    var updatedConfig = JsonSerializer.Deserialize<DashboardConfiguration>(jsonBody, jsonOptions);
+    var updatedConfig = JsonSerializer.Deserialize<DashboardConfiguration>(jsonBody, JsonConfiguration.DefaultOptions);
 
     if (updatedConfig is null)
     {

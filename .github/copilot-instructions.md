@@ -30,8 +30,8 @@ The codebase emphasizes simplicity, developer experience, and production-ready p
 - Always validate input parameters (use ArgumentNullException, ArgumentException)
 
 ### Async/Await
-- Always use `ConfigureAwait(false)` in library code (not in ASP.NET Core endpoints)
-- Pass `CancellationToken` to all async methods
+- Always use `ConfigureAwait(false)` in reusable class library code like a nuget package library
+- Pass `CancellationToken` to all async methods and do not set the parameter to optional and default value
 - Don't use `.Result` or `.Wait()` - always await
 - Return `Task` or `Task<T>`, not `async void` (except event handlers)
 
@@ -52,6 +52,9 @@ The codebase emphasizes simplicity, developer experience, and production-ready p
 - Aim for high code coverage on business logic
 - Each method being tested should have it's own class to xunit can run tests in parallel
 - Each method being tested should have at least one test for success and one for failure
+- Use xUnit v3 with Microsoft Test Platform v2 (xunit.v3.mtp-v2) which means the cli command is `dotnet run`, not `dotnet test`
+- When asserting, use Shouldly.
+- Don't forget to Verify any Moq mocks. If needed, also use the VerifyNoOtherCalls() as another level of verification.
 
 ### Documentation
 - Use XML documentation comments for public APIs

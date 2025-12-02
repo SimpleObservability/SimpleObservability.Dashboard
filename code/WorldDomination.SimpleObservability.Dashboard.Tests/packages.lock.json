@@ -38,7 +38,7 @@
       },
       "Moq": {
         "type": "Direct",
-        "requested": "[4.18.4, )",
+        "requested": "[4.18.4, 4.18.4]",
         "resolved": "4.18.4",
         "contentHash": "IOo+W51+7Afnb0noltJrKxPBSfsgMzTKCw+Re5AMx8l/vBbAbMDOynLik4+lBYIWDJSO0uV7Zdqt7cNb6RZZ+A==",
         "dependencies": {

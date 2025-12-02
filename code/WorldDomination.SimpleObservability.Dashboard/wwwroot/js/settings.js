@@ -8,6 +8,8 @@ let environmentOrder = [];
 let draggedElement = null;
 let autoSaveTimeout = null;
 let isSaving = false;
+let isJsonEditorVisible = false;
+let currentTab = 'systemSettings';
 
 /**
  * Loads the configuration from the API.
@@ -24,6 +26,11 @@ async function loadConfiguration() {
         populateSettings();
         renderServiceList();
         renderEnvironmentOrder();
+        
+        // Update JSON editor if on raw config tab.
+        if (currentTab === 'rawConfig') {
+            updateJsonEditor();
+        }
     } catch (error) {
         console.error('Error loading configuration:', error);
         showAlert('Failed to load configuration: ' + error.message, 'error');
@@ -453,6 +460,160 @@ function initializeSettings() {
 
     // Initial load.
     loadConfiguration();
+}
+
+/**
+ * Switches between tabs.
+ * @param {string} tabName - The name of the tab to switch to ('systemSettings' or 'rawConfig').
+ */
+function switchTab(tabName) {
+    // Update current tab.
+    currentTab = tabName;
+    
+    // Update tab buttons.
+    document.querySelectorAll('.tab-button').forEach(button => {
+        button.classList.remove('active');
+    });
+    document.getElementById(tabName + 'Tab').classList.add('active');
+    
+    // Update tab content.
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    document.getElementById(tabName + 'Content').classList.add('active');
+    
+    // Load JSON editor if switching to raw config tab.
+    if (tabName === 'rawConfig') {
+        updateJsonEditor();
+    }
+}
+
+/**
+ * Toggles the JSON editor visibility.
+ * @deprecated This function is no longer used with tab-based navigation.
+ */
+function toggleJsonEditor() {
+    // This function is kept for backward compatibility but is no longer needed.
+    switchTab('rawConfig');
+}
+
+/**
+ * Updates the JSON editor with the current configuration.
+ */
+function updateJsonEditor() {
+    const editor = document.getElementById('jsonConfigEditor');
+    
+    // Create a clean configuration object for the dashboard settings file format.
+    const configForFile = {
+        Dashboard: {
+            services: currentConfig.services,
+            refreshIntervalSeconds: currentConfig.refreshIntervalSeconds,
+            timeoutSeconds: currentConfig.timeoutSeconds,
+            environmentOrder: currentConfig.environmentOrder && currentConfig.environmentOrder.length > 0 
+                ? currentConfig.environmentOrder 
+                : null
+        }
+    };
+    
+    // Format with 2-space indentation for readability.
+    editor.value = JSON.stringify(configForFile, null, 2);
+}
+
+/**
+ * Reloads the JSON editor from the server.
+ */
+async function reloadJsonEditor() {
+    await loadConfiguration();
+    showAlert('Configuration reloaded from server.', 'success');
+}
+
+/**
+ * Copies the JSON configuration to the clipboard.
+ */
+async function copyJsonToClipboard() {
+    const editor = document.getElementById('jsonConfigEditor');
+    
+    try {
+        await navigator.clipboard.writeText(editor.value);
+        showAlert('Configuration copied to clipboard!', 'success');
+    } catch (error) {
+        console.error('Error copying to clipboard:', error);
+        showAlert('Failed to copy to clipboard: ' + error.message, 'error');
+    }
+}
+
+/**
+ * Saves the JSON configuration to the server.
+ */
+async function saveJsonConfiguration() {
+    const editor = document.getElementById('jsonConfigEditor');
+    
+    try {
+        // Parse the JSON to validate it.
+        const parsedConfig = JSON.parse(editor.value);
+        
+        // Extract the configuration from the Dashboard wrapper if present.
+        let configToSend;
+        if (parsedConfig.Dashboard) {
+            configToSend = parsedConfig.Dashboard;
+        } else {
+            // Assume it's already in the correct format.
+            configToSend = parsedConfig;
+        }
+        
+        // Validate required fields.
+        if (!configToSend.services || !Array.isArray(configToSend.services)) {
+            throw new Error('Configuration must include a "services" array.');
+        }
+        
+        if (configToSend.services.length === 0) {
+            throw new Error('Services list cannot be empty.');
+        }
+        
+        if (!configToSend.timeoutSeconds || configToSend.timeoutSeconds <= 0) {
+            throw new Error('timeoutSeconds must be greater than 0.');
+        }
+        
+        if (!configToSend.refreshIntervalSeconds || configToSend.refreshIntervalSeconds <= 0) {
+            throw new Error('refreshIntervalSeconds must be greater than 0.');
+        }
+        
+        // Send to the API.
+        const response = await fetch('/api/config', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(configToSend)
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Failed to save configuration');
+        }
+
+        const result = await response.json();
+        
+        // Update local state.
+        currentConfig = result.config;
+        environmentOrder = result.config.environmentOrder || [];
+        
+        // Refresh the UI.
+        populateSettings();
+        renderServiceList();
+        renderEnvironmentOrder();
+        updateJsonEditor();
+        
+        showAlert('✓ Configuration saved successfully! All changes are now active.', 'success');
+    } catch (error) {
+        console.error('Error saving JSON configuration:', error);
+        
+        if (error instanceof SyntaxError) {
+            showAlert('Invalid JSON format: ' + error.message, 'error');
+        } else {
+            showAlert('Failed to save configuration: ' + error.message, 'error');
+        }
+    }
 }
 
 // Initialize when DOM is ready.

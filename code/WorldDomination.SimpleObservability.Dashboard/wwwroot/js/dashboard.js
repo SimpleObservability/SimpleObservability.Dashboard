@@ -286,30 +286,28 @@ function renderDisabledCard(serviceName, result) {
 
 /**
  * Gets the CSS class for a health status.
- * @param {number} status - The health status enum value.
+ * @param {number|string} status - The health status enum value (number or string).
  * @returns {string} The CSS class name.
  */
 function getStatusClass(status) {
-    switch(status) {
-        case 0: return 'healthy';
-        case 1: return 'degraded';
-        case 2: return 'unhealthy';
-        default: return 'healthy';
-    }
+    // Handle both numeric and string enum values.
+    if (status === 0 || status === 'Healthy') return 'healthy';
+    if (status === 1 || status === 'Degraded') return 'degraded';
+    if (status === 2 || status === 'Unhealthy') return 'unhealthy';
+    return 'healthy';
 }
 
 /**
  * Gets the label for a health status.
- * @param {number} status - The health status enum value.
+ * @param {number|string} status - The health status enum value (number or string).
  * @returns {string} The status label.
  */
 function getStatusLabel(status) {
-    switch(status) {
-        case 0: return 'Healthy';
-        case 1: return 'Degraded';
-        case 2: return 'Unhealthy';
-        default: return 'Unknown';
-    }
+    // Handle both numeric and string enum values.
+    if (status === 0 || status === 'Healthy') return 'Healthy';
+    if (status === 1 || status === 'Degraded') return 'Degraded';
+    if (status === 2 || status === 'Unhealthy') return 'Unhealthy';
+    return 'Unknown';
 }
 
 /**

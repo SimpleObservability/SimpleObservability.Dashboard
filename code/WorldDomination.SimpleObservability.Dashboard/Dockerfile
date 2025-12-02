@@ -11,20 +11,20 @@ COPY ["Directory.Build.props", "./"]
 COPY ["Directory.Packages.props", "./"]
 
 # Copy project file.
-COPY ["code/WorldDomination.SimpleObservability.Dashboard/WorldDomination.SimpleObservability.Dashboard.csproj", "code/WorldDomination.SimpleObservability.Dashboard/"]
+COPY ["code/WorldDomination.SimpleObservability.Dashboard/WorldDomination.SimpleObservability.Dashboard.csproj", "WorldDomination.SimpleObservability.Dashboard/"]
 
 # Restore dependencies.
-RUN dotnet restore "code/WorldDomination.SimpleObservability.Dashboard/WorldDomination.SimpleObservability.Dashboard.csproj"
+RUN dotnet restore "WorldDomination.SimpleObservability.Dashboard/WorldDomination.SimpleObservability.Dashboard.csproj"
 
 # Copy everything else.
-COPY code/WorldDomination.SimpleObservability.Dashboard/. code/WorldDomination.SimpleObservability.Dashboard/
+COPY code/WorldDomination.SimpleObservability.Dashboard/. WorldDomination.SimpleObservability.Dashboard/
 
 # Build.
-WORKDIR "/src/code/WorldDomination.SimpleObservability.Dashboard"
-RUN dotnet build "WorldDomination.SimpleObservability.Dashboard.csproj" -c Release -o /app/build
+WORKDIR /src/WorldDomination.SimpleObservability.Dashboard
+RUN dotnet build "WorldDomination.SimpleObservability.Dashboard.csproj" -c Release --no-restore -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "WorldDomination.SimpleObservability.Dashboard.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "WorldDomination.SimpleObservability.Dashboard.csproj" -c Release --no-restore -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app

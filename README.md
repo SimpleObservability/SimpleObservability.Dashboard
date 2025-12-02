@@ -25,14 +25,14 @@ This exposes your own service meta-data in an easy to read dashboard - not just 
 
 ```bash
 # Pull the image
-docker pull purekrome/simple-observability:latest
+docker pull simple-observatory/dashboard:latest
 
 # Run with volume-mounted configuration
 docker run -d \
   -p 8080:8080 \
   -v $(pwd)/dashboard-config.json:/app/dashboard-config.json \
   --name observability-dashboard \
-  purekrome/simple-observability:latest
+  simple-observatory/dashboard:latest
 ```
 
 Access the dashboard at `http://localhost:8080`
@@ -62,11 +62,20 @@ The easiest way to configure the dashboard is through the built-in settings inte
 
 1. Navigate to the dashboard homepage
 2. Click the **⚙️ Settings** link in the header
-3. Configure system-wide settings:
+3. Use the tab navigation to switch between:
+   - **System Settings**: Configure system-wide settings and manage services
+   - **Raw Configuration (Advanced)**: Bulk import/export via JSON editor
+
+#### System Settings Tab
+
+Configure system-wide settings and manage individual services:
+
+1. **System Configuration**:
    - **Default Timeout**: Set the default timeout for health check requests (in seconds)
    - **Refresh Interval**: Configure how often the dashboard auto-refreshes
    - **Environment Display Order**: Define the order in which environments appear (drag and drop to reorder)
-4. Manage services:
+
+2. **Service Management**:
    - **Add New Service**: Click "+ Add New Service" to add a service
    - **Edit Service**: Click "Edit" on any service to modify its settings
    - **Delete Service**: Click "Delete" to remove a service
@@ -81,6 +90,44 @@ You can define the display order of environments in the dashboard:
 - Drag and drop to reorder them
 - Environments not in the list will appear last, sorted alphabetically
 - This is useful for ensuring production environments always appear in a consistent position
+
+#### Raw Configuration (Advanced) Tab
+
+For advanced users or bulk operations, switch to the **Raw Configuration (Advanced)** tab:
+
+1. The JSON format matches the `dashboardsettings.json` file structure
+2. You can:
+   - View the entire configuration as formatted JSON
+   - Copy the entire configuration to use in another environment
+   - Paste in a pre-configured JSON to quickly set up multiple services
+   - Make bulk changes more efficiently than through the UI forms
+3. Click **Save JSON Configuration** to apply changes immediately
+4. All changes update the in-memory configuration instantly
+
+**Available Actions:**
+- **💾 Save JSON Configuration**: Validates and saves changes to in-memory configuration
+- **↻ Reload from Server**: Refreshes the editor with the current server configuration
+- **📋 Copy to Clipboard**: One-click copy of the entire configuration
+
+**Example JSON format:**
+```json
+{
+  "Dashboard": {
+    "services": [
+      {
+        "name": "My Service",
+        "environment": "DEV",
+        "healthCheckUrl": "http://localhost:5001/healthz",
+        "description": "Development instance",
+        "enabled": true
+      }
+    ],
+    "refreshIntervalSeconds": 30,
+    "timeoutSeconds": 5,
+    "environmentOrder": ["PROD", "UAT", "DEV"]
+  }
+}
+```
 
 ### Manual Configuration
 
@@ -182,4 +229,5 @@ See [SCHEMA.md](docs/SCHEMA.md) for complete schema documentation.
 - 🔧 **Flexible Schema**: Standard health check format that works with any technology stack
 - 📦 **NuGet Package**: Easy-to-use library for .NET services (other languages supported via JSON)
 - ⚙️ **Settings UI**: Manage configuration directly from the web interface
+- 📝 **JSON Editor**: Bulk import/export configuration with raw JSON editing support
 
