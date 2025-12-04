@@ -1,7 +1,6 @@
 using System.Net;
 using Bogus;
 using Microsoft.Extensions.Logging;
-using Moq.Protected;
 using WorldDomination.SimpleObservability.Dashboard.Services;
 
 namespace WorldDomination.SimpleObservability.Dashboard.Tests.Services;
@@ -12,13 +11,13 @@ namespace WorldDomination.SimpleObservability.Dashboard.Tests.Services;
 public class HealthCheckServiceTests
 {
     private readonly Faker _faker = new();
-    private readonly Mock<IHttpClientFactory> _mockHttpClientFactory;
+    private readonly Mock<IHealthHttpClient> _mockHealthHttpClient;
     private readonly Mock<ILogger<HealthCheckService>> _mockLogger;
     private readonly DashboardConfiguration _configuration;
 
     public HealthCheckServiceTests()
     {
-        _mockHttpClientFactory = new Mock<IHttpClientFactory>();
+        _mockHealthHttpClient = new Mock<IHealthHttpClient>();
         _mockLogger = new Mock<ILogger<HealthCheckService>>();
         
         _configuration = new DashboardConfiguration
@@ -29,7 +28,7 @@ public class HealthCheckServiceTests
     }
 
     [Fact]
-    public void Constructor_WithNullHttpClientFactory_ShouldThrowArgumentNullException()
+    public void Constructor_WithNullHttpClient_ShouldThrowArgumentNullException()
     {
         // Arrange.
         // Act.
@@ -37,7 +36,7 @@ public class HealthCheckServiceTests
             new HealthCheckService(null!, _configuration, _mockLogger.Object));
 
         // Assert.
-        exception.ParamName.ShouldBe("httpClientFactory");
+        exception.ParamName.ShouldBe("healthHttpClient");
     }
 
     [Fact]
@@ -46,7 +45,7 @@ public class HealthCheckServiceTests
         // Arrange.
         // Act.
         var exception = Should.Throw<ArgumentNullException>(() =>
-            new HealthCheckService(_mockHttpClientFactory.Object, null!, _mockLogger.Object));
+            new HealthCheckService(_mockHealthHttpClient.Object, null!, _mockLogger.Object));
 
         // Assert.
         exception.ParamName.ShouldBe("configuration");
@@ -58,7 +57,7 @@ public class HealthCheckServiceTests
         // Arrange.
         // Act.
         var exception = Should.Throw<ArgumentNullException>(() =>
-            new HealthCheckService(_mockHttpClientFactory.Object, _configuration, null!));
+            new HealthCheckService(_mockHealthHttpClient.Object, _configuration, null!));
 
         // Assert.
         exception.ParamName.ShouldBe("logger");
@@ -70,7 +69,7 @@ public class HealthCheckServiceTests
         // Arrange.
         // Act.
         var service = new HealthCheckService(
-            _mockHttpClientFactory.Object,
+            _mockHealthHttpClient.Object,
             _configuration,
             _mockLogger.Object);
 
@@ -83,7 +82,7 @@ public class HealthCheckServiceTests
     {
         // Arrange.
         var service = new HealthCheckService(
-            _mockHttpClientFactory.Object,
+            _mockHealthHttpClient.Object,
             _configuration,
             _mockLogger.Object);
 
@@ -108,7 +107,7 @@ public class HealthCheckServiceTests
         };
 
         var service = new HealthCheckService(
-            _mockHttpClientFactory.Object,
+            _mockHealthHttpClient.Object,
             _configuration,
             _mockLogger.Object);
 
@@ -142,15 +141,20 @@ public class HealthCheckServiceTests
         };
 
         var responseContent = JsonSerializer.Serialize(healthMetadata);
-        var mockHandler = CreateMockHttpMessageHandler(HttpStatusCode.OK, responseContent);
-        var httpClient = new HttpClient(mockHandler.Object);
 
-        _mockHttpClientFactory
-            .Setup(f => f.CreateClient("HealthCheck"))
-            .Returns(httpClient);
+        _mockHealthHttpClient
+            .Setup(h => h.GetAsync(
+                endpoint.HealthCheckUrl,
+                It.IsAny<TimeSpan>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(responseContent)
+            });
 
         var service = new HealthCheckService(
-            _mockHttpClientFactory.Object,
+            _mockHealthHttpClient.Object,
             _configuration,
             _mockLogger.Object);
 
@@ -179,15 +183,19 @@ public class HealthCheckServiceTests
             HealthCheckUrl = "http://localhost:5000/healthz"
         };
 
-        var mockHandler = CreateMockHttpMessageHandler(HttpStatusCode.OK, string.Empty);
-        var httpClient = new HttpClient(mockHandler.Object);
-
-        _mockHttpClientFactory
-            .Setup(f => f.CreateClient("HealthCheck"))
-            .Returns(httpClient);
+        _mockHealthHttpClient
+            .Setup(h => h.GetAsync(
+                endpoint.HealthCheckUrl,
+                It.IsAny<TimeSpan>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(string.Empty)
+            });
 
         var service = new HealthCheckService(
-            _mockHttpClientFactory.Object,
+            _mockHealthHttpClient.Object,
             _configuration,
             _mockLogger.Object);
 
@@ -212,15 +220,19 @@ public class HealthCheckServiceTests
             HealthCheckUrl = "http://localhost:5000/healthz"
         };
 
-        var mockHandler = CreateMockHttpMessageHandler(HttpStatusCode.OK, "{ invalid json }");
-        var httpClient = new HttpClient(mockHandler.Object);
-
-        _mockHttpClientFactory
-            .Setup(f => f.CreateClient("HealthCheck"))
-            .Returns(httpClient);
+        _mockHealthHttpClient
+            .Setup(h => h.GetAsync(
+                endpoint.HealthCheckUrl,
+                It.IsAny<TimeSpan>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent("{ invalid json }")
+            });
 
         var service = new HealthCheckService(
-            _mockHttpClientFactory.Object,
+            _mockHealthHttpClient.Object,
             _configuration,
             _mockLogger.Object);
 
@@ -248,15 +260,19 @@ public class HealthCheckServiceTests
             HealthCheckUrl = "http://localhost:5000/healthz"
         };
 
-        var mockHandler = CreateMockHttpMessageHandler(statusCode, "Error");
-        var httpClient = new HttpClient(mockHandler.Object);
-
-        _mockHttpClientFactory
-            .Setup(f => f.CreateClient("HealthCheck"))
-            .Returns(httpClient);
+        _mockHealthHttpClient
+            .Setup(h => h.GetAsync(
+                endpoint.HealthCheckUrl,
+                It.IsAny<TimeSpan>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = statusCode,
+                Content = new StringContent("Error")
+            });
 
         var service = new HealthCheckService(
-            _mockHttpClientFactory.Object,
+            _mockHealthHttpClient.Object,
             _configuration,
             _mockLogger.Object);
 
@@ -281,22 +297,15 @@ public class HealthCheckServiceTests
             HealthCheckUrl = "http://localhost:5000/healthz"
         };
 
-        var mockHandler = new Mock<HttpMessageHandler>();
-        mockHandler.Protected()
-            .Setup<Task<HttpResponseMessage>>(
-                "SendAsync",
-                ItExpr.IsAny<HttpRequestMessage>(),
-                ItExpr.IsAny<CancellationToken>())
+        _mockHealthHttpClient
+            .Setup(h => h.GetAsync(
+                endpoint.HealthCheckUrl,
+                It.IsAny<TimeSpan>(),
+                It.IsAny<CancellationToken>()))
             .ThrowsAsync(new HttpRequestException("Connection failed"));
 
-        var httpClient = new HttpClient(mockHandler.Object);
-
-        _mockHttpClientFactory
-            .Setup(f => f.CreateClient("HealthCheck"))
-            .Returns(httpClient);
-
         var service = new HealthCheckService(
-            _mockHttpClientFactory.Object,
+            _mockHealthHttpClient.Object,
             _configuration,
             _mockLogger.Object);
 
@@ -322,22 +331,15 @@ public class HealthCheckServiceTests
             HealthCheckUrl = "http://localhost:5000/healthz"
         };
 
-        var mockHandler = new Mock<HttpMessageHandler>();
-        mockHandler.Protected()
-            .Setup<Task<HttpResponseMessage>>(
-                "SendAsync",
-                ItExpr.IsAny<HttpRequestMessage>(),
-                ItExpr.IsAny<CancellationToken>())
+        _mockHealthHttpClient
+            .Setup(h => h.GetAsync(
+                endpoint.HealthCheckUrl,
+                It.IsAny<TimeSpan>(),
+                It.IsAny<CancellationToken>()))
             .ThrowsAsync(new TaskCanceledException("Request timed out"));
 
-        var httpClient = new HttpClient(mockHandler.Object);
-
-        _mockHttpClientFactory
-            .Setup(f => f.CreateClient("HealthCheck"))
-            .Returns(httpClient);
-
         var service = new HealthCheckService(
-            _mockHttpClientFactory.Object,
+            _mockHealthHttpClient.Object,
             _configuration,
             _mockLogger.Object);
 
@@ -373,16 +375,19 @@ public class HealthCheckServiceTests
 
         var responseContent = JsonSerializer.Serialize(healthMetadata);
 
-        _mockHttpClientFactory
-            .Setup(f => f.CreateClient("HealthCheck"))
-            .Returns(() =>
+        _mockHealthHttpClient
+            .Setup(h => h.GetAsync(
+                It.IsAny<string>(),
+                It.IsAny<TimeSpan>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new HttpResponseMessage
             {
-                var mockHandler = CreateMockHttpMessageHandler(HttpStatusCode.OK, responseContent);
-                return new HttpClient(mockHandler.Object);
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(responseContent)
             });
 
         var service = new HealthCheckService(
-            _mockHttpClientFactory.Object,
+            _mockHealthHttpClient.Object,
             config,
             _mockLogger.Object);
 
@@ -402,7 +407,7 @@ public class HealthCheckServiceTests
     {
         // Arrange.
         var service = new HealthCheckService(
-            _mockHttpClientFactory.Object,
+            _mockHealthHttpClient.Object,
             _configuration,
             _mockLogger.Object);
 
@@ -427,22 +432,15 @@ public class HealthCheckServiceTests
             TimeoutSeconds = 5
         };
 
-        var mockHandler = new Mock<HttpMessageHandler>();
-        mockHandler.Protected()
-            .Setup<Task<HttpResponseMessage>>(
-                "SendAsync",
-                ItExpr.IsAny<HttpRequestMessage>(),
-                ItExpr.IsAny<CancellationToken>())
+        _mockHealthHttpClient
+            .Setup(h => h.GetAsync(
+                It.IsAny<string>(),
+                It.IsAny<TimeSpan>(),
+                It.IsAny<CancellationToken>()))
             .ThrowsAsync(new TaskCanceledException());
 
-        var httpClient = new HttpClient(mockHandler.Object);
-
-        _mockHttpClientFactory
-            .Setup(f => f.CreateClient("HealthCheck"))
-            .Returns(httpClient);
-
         var service = new HealthCheckService(
-            _mockHttpClientFactory.Object,
+            _mockHealthHttpClient.Object,
             config,
             _mockLogger.Object);
 
@@ -478,20 +476,22 @@ public class HealthCheckServiceTests
         };
 
         var responseContent = JsonSerializer.Serialize(healthMetadata);
-        HttpClient? capturedClient = null;
+        TimeSpan? capturedTimeout = null;
 
-        _mockHttpClientFactory
-            .Setup(f => f.CreateClient("HealthCheck"))
-            .Returns(() =>
+        _mockHealthHttpClient
+            .Setup(h => h.GetAsync(
+                endpoint.HealthCheckUrl,
+                It.IsAny<TimeSpan>(),
+                It.IsAny<CancellationToken>()))
+            .Callback<string, TimeSpan, CancellationToken>((_, timeout, _) => capturedTimeout = timeout)
+            .ReturnsAsync(new HttpResponseMessage
             {
-                var mockHandler = CreateMockHttpMessageHandler(HttpStatusCode.OK, responseContent);
-                var client = new HttpClient(mockHandler.Object);
-                capturedClient = client;
-                return client;
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(responseContent)
             });
 
         var service = new HealthCheckService(
-            _mockHttpClientFactory.Object,
+            _mockHealthHttpClient.Object,
             _configuration,
             _mockLogger.Object);
 
@@ -501,8 +501,8 @@ public class HealthCheckServiceTests
         // Assert.
         result.ShouldNotBeNull();
         result.IsSuccess.ShouldBeTrue();
-        capturedClient.ShouldNotBeNull();
-        capturedClient!.Timeout.ShouldBe(TimeSpan.FromSeconds(15));
+        capturedTimeout.ShouldNotBeNull();
+        capturedTimeout!.Value.ShouldBe(TimeSpan.FromSeconds(15));
     }
 
     [Fact]
@@ -525,20 +525,22 @@ public class HealthCheckServiceTests
         };
 
         var responseContent = JsonSerializer.Serialize(healthMetadata);
-        HttpClient? capturedClient = null;
+        TimeSpan? capturedTimeout = null;
 
-        _mockHttpClientFactory
-            .Setup(f => f.CreateClient("HealthCheck"))
-            .Returns(() =>
+        _mockHealthHttpClient
+            .Setup(h => h.GetAsync(
+                endpoint.HealthCheckUrl,
+                It.IsAny<TimeSpan>(),
+                It.IsAny<CancellationToken>()))
+            .Callback<string, TimeSpan, CancellationToken>((_, timeout, _) => capturedTimeout = timeout)
+            .ReturnsAsync(new HttpResponseMessage
             {
-                var mockHandler = CreateMockHttpMessageHandler(HttpStatusCode.OK, responseContent);
-                var client = new HttpClient(mockHandler.Object);
-                capturedClient = client;
-                return client;
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(responseContent)
             });
 
         var service = new HealthCheckService(
-            _mockHttpClientFactory.Object,
+            _mockHealthHttpClient.Object,
             _configuration,
             _mockLogger.Object);
 
@@ -548,8 +550,8 @@ public class HealthCheckServiceTests
         // Assert.
         result.ShouldNotBeNull();
         result.IsSuccess.ShouldBeTrue();
-        capturedClient.ShouldNotBeNull();
-        capturedClient!.Timeout.ShouldBe(TimeSpan.FromSeconds(5)); // Default from _configuration.
+        capturedTimeout.ShouldNotBeNull();
+        capturedTimeout!.Value.ShouldBe(TimeSpan.FromSeconds(5)); // Default from _configuration.
     }
 
     [Fact]
@@ -578,15 +580,20 @@ public class HealthCheckServiceTests
         };
 
         var responseContent = JsonSerializer.Serialize(healthMetadata);
-        var mockHandler = CreateMockHttpMessageHandler(HttpStatusCode.OK, responseContent);
-        var httpClient = new HttpClient(mockHandler.Object);
 
-        _mockHttpClientFactory
-            .Setup(f => f.CreateClient("HealthCheck"))
-            .Returns(httpClient);
+        _mockHealthHttpClient
+            .Setup(h => h.GetAsync(
+                endpoint.HealthCheckUrl,
+                It.IsAny<TimeSpan>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(responseContent)
+            });
 
         var service = new HealthCheckService(
-            _mockHttpClientFactory.Object,
+            _mockHealthHttpClient.Object,
             _configuration,
             _mockLogger.Object);
 
@@ -603,23 +610,5 @@ public class HealthCheckServiceTests
         result.HealthMetadata.AdditionalMetadata["Cache"].ShouldBe("Redis v7.0");
         result.HealthMetadata.AdditionalMetadata["HostName"].ShouldBe("server-01");
         result.HealthMetadata.AdditionalMetadata["Region"].ShouldBe("us-east-1");
-    }
-
-    private Mock<HttpMessageHandler> CreateMockHttpMessageHandler(HttpStatusCode statusCode, string content)
-    {
-        var mockHandler = new Mock<HttpMessageHandler>();
-        
-        mockHandler.Protected()
-            .Setup<Task<HttpResponseMessage>>(
-                "SendAsync",
-                ItExpr.IsAny<HttpRequestMessage>(),
-                ItExpr.IsAny<CancellationToken>())
-            .ReturnsAsync(new HttpResponseMessage
-            {
-                StatusCode = statusCode,
-                Content = new StringContent(content)
-            });
-
-        return mockHandler;
     }
 }

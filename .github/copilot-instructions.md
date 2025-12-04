@@ -50,8 +50,9 @@ The codebase emphasizes simplicity, developer experience, and production-ready p
 - Use meaningful test names (e.g., `AddMessageAsync_WithLargeContent_StoresInBlob`)
 - Mock external dependencies (use Moq or NSubstitute)
 - Aim for high code coverage on business logic
-- Each method being tested should have it's own class to xunit can run tests in parallel
+- Each method being tested should have it's own class so xunit can run tests in parallel
 - Each method being tested should have at least one test for success and one for failure
+- Because a method is part of a class, this test class should exist under a folder where the folder is the class name + Tests. e.g. public class User will be "UserTests"
 - Use xUnit v3 with Microsoft Test Platform v2 (xunit.v3.mtp-v2) which means the cli command is `dotnet run`, not `dotnet test`
 - When asserting, use Shouldly.
 - Don't forget to Verify any Moq mocks. If needed, also use the VerifyNoOtherCalls() as another level of verification.

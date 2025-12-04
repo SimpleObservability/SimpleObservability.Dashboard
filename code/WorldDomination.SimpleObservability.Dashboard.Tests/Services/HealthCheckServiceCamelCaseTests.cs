@@ -1,3 +1,5 @@
+using WorldDomination.SimpleObservability.Dashboard.Configuration;
+
 namespace WorldDomination.SimpleObservability.Dashboard.Tests.Services;
 
 /// <summary>
@@ -5,11 +7,6 @@ namespace WorldDomination.SimpleObservability.Dashboard.Tests.Services;
 /// </summary>
 public class HealthCheckServiceCamelCaseTests
 {
-    private static readonly JsonSerializerOptions _jsonOptions = new()
-    {
-        PropertyNameCaseInsensitive = true
-    };
-
     [Fact]
     public void DeserializeHealthMetadata_WithCamelCaseJson_ShouldSucceed()
     {
@@ -32,20 +29,20 @@ public class HealthCheckServiceCamelCaseTests
         """;
 
         // Act.
-        var metadata = JsonSerializer.Deserialize<HealthMetadata>(camelCaseJson, _jsonOptions);
+        var metadata = JsonSerializer.Deserialize<HealthMetadata>(camelCaseJson, JsonConfiguration.DefaultOptions);
 
         // Assert.
-        Assert.NotNull(metadata);
-        Assert.Equal("Payment API", metadata.ServiceName);
-        Assert.Equal("1.2.3", metadata.Version);
-        Assert.Equal("Production", metadata.Environment);
-        Assert.Equal(HealthStatus.Healthy, metadata.Status);
-        Assert.Equal("All systems operational", metadata.Description);
-        Assert.Equal("payment-api-01", metadata.HostName);
-        Assert.NotNull(metadata.AdditionalMetadata);
-        Assert.Equal(2, metadata.AdditionalMetadata.Count);
-        Assert.Equal("PostgreSQL", metadata.AdditionalMetadata["database"]);
-        Assert.Equal("Redis", metadata.AdditionalMetadata["cache"]);
+        metadata.ShouldNotBeNull();
+        metadata.ServiceName.ShouldBe("Payment API");
+        metadata.Version.ShouldBe("1.2.3");
+        metadata.Environment.ShouldBe("Production");
+        metadata.Status.ShouldBe(HealthStatus.Healthy);
+        metadata.Description.ShouldBe("All systems operational");
+        metadata.HostName.ShouldBe("payment-api-01");
+        metadata.AdditionalMetadata.ShouldNotBeNull();
+        metadata.AdditionalMetadata!.Count.ShouldBe(2);
+        metadata.AdditionalMetadata["database"].ShouldBe("PostgreSQL");
+        metadata.AdditionalMetadata["cache"].ShouldBe("Redis");
     }
 
     [Fact]
@@ -70,20 +67,20 @@ public class HealthCheckServiceCamelCaseTests
         """;
 
         // Act.
-        var metadata = JsonSerializer.Deserialize<HealthMetadata>(camelCaseJson, _jsonOptions);
+        var metadata = JsonSerializer.Deserialize<HealthMetadata>(camelCaseJson, JsonConfiguration.DefaultOptions);
 
         // Assert.
-        Assert.NotNull(metadata);
-        Assert.Equal("Payment API", metadata.ServiceName);
-        Assert.Equal("1.2.3", metadata.Version);
-        Assert.Equal("Production", metadata.Environment);
-        Assert.Equal(HealthStatus.Healthy, metadata.Status);
-        Assert.Equal("All systems operational", metadata.Description);
-        Assert.Equal("payment-api-01", metadata.HostName);
-        Assert.NotNull(metadata.AdditionalMetadata);
-        Assert.Equal(2, metadata.AdditionalMetadata.Count);
-        Assert.Equal("PostgreSQL", metadata.AdditionalMetadata["database"]);
-        Assert.Equal("Redis", metadata.AdditionalMetadata["cache"]);
+        metadata.ShouldNotBeNull();
+        metadata.ServiceName.ShouldBe("Payment API");
+        metadata.Version.ShouldBe("1.2.3");
+        metadata.Environment.ShouldBe("Production");
+        metadata.Status.ShouldBe(HealthStatus.Healthy);
+        metadata.Description.ShouldBe("All systems operational");
+        metadata.HostName.ShouldBe("payment-api-01");
+        metadata.AdditionalMetadata.ShouldNotBeNull();
+        metadata.AdditionalMetadata!.Count.ShouldBe(2);
+        metadata.AdditionalMetadata["database"].ShouldBe("PostgreSQL");
+        metadata.AdditionalMetadata["cache"].ShouldBe("Redis");
     }
 
     [Fact]
@@ -108,20 +105,20 @@ public class HealthCheckServiceCamelCaseTests
         """;
 
         // Act.
-        var metadata = JsonSerializer.Deserialize<HealthMetadata>(pascalCaseJson, _jsonOptions);
+        var metadata = JsonSerializer.Deserialize<HealthMetadata>(pascalCaseJson, JsonConfiguration.DefaultOptions);
 
         // Assert.
-        Assert.NotNull(metadata);
-        Assert.Equal("Payment API", metadata.ServiceName);
-        Assert.Equal("1.2.3", metadata.Version);
-        Assert.Equal("Production", metadata.Environment);
-        Assert.Equal(HealthStatus.Healthy, metadata.Status);
-        Assert.Equal("All systems operational", metadata.Description);
-        Assert.Equal("payment-api-01", metadata.HostName);
-        Assert.NotNull(metadata.AdditionalMetadata);
-        Assert.Equal(2, metadata.AdditionalMetadata.Count);
-        Assert.Equal("PostgreSQL", metadata.AdditionalMetadata["Database"]);
-        Assert.Equal("Redis", metadata.AdditionalMetadata["Cache"]);
+        metadata.ShouldNotBeNull();
+        metadata.ServiceName.ShouldBe("Payment API");
+        metadata.Version.ShouldBe("1.2.3");
+        metadata.Environment.ShouldBe("Production");
+        metadata.Status.ShouldBe(HealthStatus.Healthy);
+        metadata.Description.ShouldBe("All systems operational");
+        metadata.HostName.ShouldBe("payment-api-01");
+        metadata.AdditionalMetadata.ShouldNotBeNull();
+        metadata.AdditionalMetadata!.Count.ShouldBe(2);
+        metadata.AdditionalMetadata["Database"].ShouldBe("PostgreSQL");
+        metadata.AdditionalMetadata["Cache"].ShouldBe("Redis");
     }
 
     [Fact]
@@ -146,20 +143,20 @@ public class HealthCheckServiceCamelCaseTests
         """;
 
         // Act.
-        var metadata = JsonSerializer.Deserialize<HealthMetadata>(pascalCaseJson, _jsonOptions);
+        var metadata = JsonSerializer.Deserialize<HealthMetadata>(pascalCaseJson, JsonConfiguration.DefaultOptions);
 
         // Assert.
-        Assert.NotNull(metadata);
-        Assert.Equal("Payment API", metadata.ServiceName);
-        Assert.Equal("1.2.3", metadata.Version);
-        Assert.Equal("Production", metadata.Environment);
-        Assert.Equal(HealthStatus.Healthy, metadata.Status);
-        Assert.Equal("All systems operational", metadata.Description);
-        Assert.Equal("payment-api-01", metadata.HostName);
-        Assert.NotNull(metadata.AdditionalMetadata);
-        Assert.Equal(2, metadata.AdditionalMetadata.Count);
-        Assert.Equal("PostgreSQL", metadata.AdditionalMetadata["Database"]);
-        Assert.Equal("Redis", metadata.AdditionalMetadata["Cache"]);
+        metadata.ShouldNotBeNull();
+        metadata.ServiceName.ShouldBe("Payment API");
+        metadata.Version.ShouldBe("1.2.3");
+        metadata.Environment.ShouldBe("Production");
+        metadata.Status.ShouldBe(HealthStatus.Healthy);
+        metadata.Description.ShouldBe("All systems operational");
+        metadata.HostName.ShouldBe("payment-api-01");
+        metadata.AdditionalMetadata.ShouldNotBeNull();
+        metadata.AdditionalMetadata!.Count.ShouldBe(2);
+        metadata.AdditionalMetadata["Database"].ShouldBe("PostgreSQL");
+        metadata.AdditionalMetadata["Cache"].ShouldBe("Redis");
     }
 
     [Fact]
@@ -174,12 +171,12 @@ public class HealthCheckServiceCamelCaseTests
         """;
 
         // Act.
-        var metadata = JsonSerializer.Deserialize<HealthMetadata>(minimalJson, _jsonOptions);
+        var metadata = JsonSerializer.Deserialize<HealthMetadata>(minimalJson, JsonConfiguration.DefaultOptions);
 
         // Assert.
-        Assert.NotNull(metadata);
-        Assert.Equal("My API", metadata.ServiceName);
-        Assert.Equal("1.0.0", metadata.Version);
+        metadata.ShouldNotBeNull();
+        metadata.ServiceName.ShouldBe("My API");
+        metadata.Version.ShouldBe("1.0.0");
     }
 
     [Fact]
@@ -195,11 +192,31 @@ public class HealthCheckServiceCamelCaseTests
         """;
 
         // Act.
-        var metadata = JsonSerializer.Deserialize<HealthMetadata>(json, _jsonOptions);
+        var metadata = JsonSerializer.Deserialize<HealthMetadata>(json, JsonConfiguration.DefaultOptions);
 
         // Assert.
-        Assert.NotNull(metadata);
-        Assert.Equal(HealthStatus.Degraded, metadata.Status);
+        metadata.ShouldNotBeNull();
+        metadata.Status.ShouldBe(HealthStatus.Degraded);
+    }
+
+    [Fact]
+    public void DeserializeHealthStatus_WithCamelCaseString_ShouldSucceed()
+    {
+        // Arrange.
+        var json = """
+        {
+          "serviceName": "Test",
+          "version": "1.0",
+          "status": "degraded"
+        }
+        """;
+
+        // Act.
+        var metadata = JsonSerializer.Deserialize<HealthMetadata>(json, JsonConfiguration.DefaultOptions);
+
+        // Assert.
+        metadata.ShouldNotBeNull();
+        metadata.Status.ShouldBe(HealthStatus.Degraded);
     }
 
     [Fact]
@@ -215,11 +232,11 @@ public class HealthCheckServiceCamelCaseTests
         """;
 
         // Act.
-        var metadata = JsonSerializer.Deserialize<HealthMetadata>(json, _jsonOptions);
+        var metadata = JsonSerializer.Deserialize<HealthMetadata>(json, JsonConfiguration.DefaultOptions);
 
         // Assert.
-        Assert.NotNull(metadata);
-        Assert.Equal(HealthStatus.Degraded, metadata.Status);
+        metadata.ShouldNotBeNull();
+        metadata.Status.ShouldBe(HealthStatus.Degraded);
     }
 
     [Fact]
@@ -235,11 +252,11 @@ public class HealthCheckServiceCamelCaseTests
         """;
 
         // Act.
-        var metadata = JsonSerializer.Deserialize<HealthMetadata>(json, _jsonOptions);
+        var metadata = JsonSerializer.Deserialize<HealthMetadata>(json, JsonConfiguration.DefaultOptions);
 
         // Assert.
-        Assert.NotNull(metadata);
-        Assert.Equal(HealthStatus.Unhealthy, metadata.Status);
+        metadata.ShouldNotBeNull();
+        metadata.Status.ShouldBe(HealthStatus.Unhealthy);
     }
 
     [Fact]
@@ -255,71 +272,37 @@ public class HealthCheckServiceCamelCaseTests
         """;
 
         // Act.
-        var metadata = JsonSerializer.Deserialize<HealthMetadata>(json, _jsonOptions);
+        var metadata = JsonSerializer.Deserialize<HealthMetadata>(json, JsonConfiguration.DefaultOptions);
 
         // Assert.
-        Assert.NotNull(metadata);
-        Assert.Equal(HealthStatus.Unhealthy, metadata.Status);
+        metadata.ShouldNotBeNull();
+        metadata.Status.ShouldBe(HealthStatus.Unhealthy);
     }
 
-    [Fact]
-    public void DeserializeHealthStatus_WithLowercaseString_ShouldSucceed()
+    [Theory]
+    [InlineData("Healthy", HealthStatus.Healthy)]
+    [InlineData("healthy", HealthStatus.Healthy)]
+    [InlineData("Degraded", HealthStatus.Degraded)]
+    [InlineData("degraded", HealthStatus.Degraded)]
+    [InlineData("Unhealthy", HealthStatus.Unhealthy)]
+    [InlineData("unhealthy", HealthStatus.Unhealthy)]
+    public void DeserializeHealthStatus_WithVariousCasings_ShouldSucceed(string statusValue, HealthStatus expectedStatus)
     {
         // Arrange.
-        var json = """
+        var json = $$"""
         {
           "serviceName": "Test",
           "version": "1.0",
-          "status": "healthy"
+          "status": "{{statusValue}}"
         }
         """;
 
         // Act.
-        var metadata = JsonSerializer.Deserialize<HealthMetadata>(json, _jsonOptions);
+        var metadata = JsonSerializer.Deserialize<HealthMetadata>(json, JsonConfiguration.DefaultOptions);
 
         // Assert.
-        Assert.NotNull(metadata);
-        Assert.Equal(HealthStatus.Healthy, metadata.Status);
-    }
-
-    [Fact]
-    public void DeserializeHealthStatus_WithUppercaseString_ShouldSucceed()
-    {
-        // Arrange.
-        var json = """
-        {
-          "serviceName": "Test",
-          "version": "1.0",
-          "status": "HEALTHY"
-        }
-        """;
-
-        // Act.
-        var metadata = JsonSerializer.Deserialize<HealthMetadata>(json, _jsonOptions);
-
-        // Assert.
-        Assert.NotNull(metadata);
-        Assert.Equal(HealthStatus.Healthy, metadata.Status);
-    }
-
-    [Fact]
-    public void DeserializeHealthStatus_WithMixedCaseString_ShouldSucceed()
-    {
-        // Arrange.
-        var json = """
-        {
-          "serviceName": "Test",
-          "version": "1.0",
-          "status": "HeAlThY"
-        }
-        """;
-
-        // Act.
-        var metadata = JsonSerializer.Deserialize<HealthMetadata>(json, _jsonOptions);
-
-        // Assert.
-        Assert.NotNull(metadata);
-        Assert.Equal(HealthStatus.Healthy, metadata.Status);
+        metadata.ShouldNotBeNull();
+        metadata.Status.ShouldBe(expectedStatus);
     }
 
     [Fact]
@@ -337,14 +320,14 @@ public class HealthCheckServiceCamelCaseTests
         """;
 
         // Act.
-        var metadata = JsonSerializer.Deserialize<HealthMetadata>(mixedJson, _jsonOptions);
+        var metadata = JsonSerializer.Deserialize<HealthMetadata>(mixedJson, JsonConfiguration.DefaultOptions);
 
         // Assert.
-        Assert.NotNull(metadata);
-        Assert.Equal("Test Service", metadata.ServiceName);
-        Assert.Equal("2.0.0", metadata.Version);
-        Assert.Equal("UAT", metadata.Environment);
-        Assert.Equal(HealthStatus.Healthy, metadata.Status);
+        metadata.ShouldNotBeNull();
+        metadata.ServiceName.ShouldBe("Test Service");
+        metadata.Version.ShouldBe("2.0.0");
+        metadata.Environment.ShouldBe("UAT");
+        metadata.Status.ShouldBe(HealthStatus.Healthy);
     }
 
     [Fact]
@@ -362,14 +345,14 @@ public class HealthCheckServiceCamelCaseTests
         """;
 
         // Act.
-        var metadata = JsonSerializer.Deserialize<HealthMetadata>(mixedJson, _jsonOptions);
+        var metadata = JsonSerializer.Deserialize<HealthMetadata>(mixedJson, JsonConfiguration.DefaultOptions);
 
         // Assert.
-        Assert.NotNull(metadata);
-        Assert.Equal("Test Service", metadata.ServiceName);
-        Assert.Equal("2.0.0", metadata.Version);
-        Assert.Equal("UAT", metadata.Environment);
-        Assert.Equal(HealthStatus.Healthy, metadata.Status);
+        metadata.ShouldNotBeNull();
+        metadata.ServiceName.ShouldBe("Test Service");
+        metadata.Version.ShouldBe("2.0.0");
+        metadata.Environment.ShouldBe("UAT");
+        metadata.Status.ShouldBe(HealthStatus.Healthy);
     }
 
     [Fact]
@@ -391,17 +374,17 @@ public class HealthCheckServiceCamelCaseTests
         """;
 
         // Act.
-        var metadata = JsonSerializer.Deserialize<HealthMetadata>(json, _jsonOptions);
+        var metadata = JsonSerializer.Deserialize<HealthMetadata>(json, JsonConfiguration.DefaultOptions);
 
         // Assert.
-        Assert.NotNull(metadata);
-        Assert.Equal("User Service", metadata.ServiceName);
-        Assert.Equal("feature/new-authentication", metadata.Version);
-        Assert.Equal("DEV", metadata.Environment);
-        Assert.Equal(HealthStatus.Degraded, metadata.Status);
-        Assert.NotNull(metadata.AdditionalMetadata);
-        Assert.Equal("abc123def456", metadata.AdditionalMetadata["commit"]);
-        Assert.Equal("feature/new-authentication", metadata.AdditionalMetadata["branch"]);
+        metadata.ShouldNotBeNull();
+        metadata.ServiceName.ShouldBe("User Service");
+        metadata.Version.ShouldBe("feature/new-authentication");
+        metadata.Environment.ShouldBe("DEV");
+        metadata.Status.ShouldBe(HealthStatus.Degraded);
+        metadata.AdditionalMetadata.ShouldNotBeNull();
+        metadata.AdditionalMetadata!["commit"].ShouldBe("abc123def456");
+        metadata.AdditionalMetadata["branch"].ShouldBe("feature/new-authentication");
     }
 
     [Fact]
@@ -423,45 +406,16 @@ public class HealthCheckServiceCamelCaseTests
         """;
 
         // Act.
-        var metadata = JsonSerializer.Deserialize<HealthMetadata>(json, _jsonOptions);
+        var metadata = JsonSerializer.Deserialize<HealthMetadata>(json, JsonConfiguration.DefaultOptions);
 
         // Assert.
-        Assert.NotNull(metadata);
-        Assert.Equal("User Service", metadata.ServiceName);
-        Assert.Equal("feature/new-authentication", metadata.Version);
-        Assert.Equal("DEV", metadata.Environment);
-        Assert.Equal(HealthStatus.Degraded, metadata.Status);
-        Assert.NotNull(metadata.AdditionalMetadata);
-        Assert.Equal("abc123def456", metadata.AdditionalMetadata["commit"]);
-        Assert.Equal("feature/new-authentication", metadata.AdditionalMetadata["branch"]);
-    }
-
-    [Theory]
-    [InlineData("healthy", HealthStatus.Healthy)]
-    [InlineData("Healthy", HealthStatus.Healthy)]
-    [InlineData("HEALTHY", HealthStatus.Healthy)]
-    [InlineData("degraded", HealthStatus.Degraded)]
-    [InlineData("Degraded", HealthStatus.Degraded)]
-    [InlineData("DEGRADED", HealthStatus.Degraded)]
-    [InlineData("unhealthy", HealthStatus.Unhealthy)]
-    [InlineData("Unhealthy", HealthStatus.Unhealthy)]
-    [InlineData("UNHEALTHY", HealthStatus.Unhealthy)]
-    public void DeserializeHealthStatus_WithVariousCasings_ShouldSucceed(string statusValue, HealthStatus expectedStatus)
-    {
-        // Arrange.
-        var json = $$"""
-        {
-          "serviceName": "Test",
-          "version": "1.0",
-          "status": "{{statusValue}}"
-        }
-        """;
-
-        // Act.
-        var metadata = JsonSerializer.Deserialize<HealthMetadata>(json, _jsonOptions);
-
-        // Assert.
-        Assert.NotNull(metadata);
-        Assert.Equal(expectedStatus, metadata.Status);
+        metadata.ShouldNotBeNull();
+        metadata.ServiceName.ShouldBe("User Service");
+        metadata.Version.ShouldBe("feature/new-authentication");
+        metadata.Environment.ShouldBe("DEV");
+        metadata.Status.ShouldBe(HealthStatus.Degraded);
+        metadata.AdditionalMetadata.ShouldNotBeNull();
+        metadata.AdditionalMetadata!["commit"].ShouldBe("abc123def456");
+        metadata.AdditionalMetadata["branch"].ShouldBe("feature/new-authentication");
     }
 }

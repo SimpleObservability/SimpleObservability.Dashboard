@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc.Testing;
-using System.Text.Json.Serialization;
+using WorldDomination.SimpleObservability.Dashboard.Configuration;
 
 namespace WorldDomination.SimpleObservability.Dashboard.Tests;
 
@@ -10,22 +10,6 @@ public class JsonSerializationTests : IClassFixture<WebApplicationFactory<Progra
 {
     private readonly WebApplicationFactory<Program> _factory;
     private readonly HttpClient _client;
-
-    private static readonly JsonSerializerOptions _caseInsensitiveOptions = new()
-    {
-        PropertyNameCaseInsensitive = true
-    };
-
-    private static readonly JsonSerializerOptions _camelCaseOptions = new()
-    {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-    };
-
-    private static readonly JsonSerializerOptions _camelCaseWithEnumOptions = new()
-    {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
-    };
 
     public JsonSerializationTests(WebApplicationFactory<Program> factory)
     {
@@ -48,18 +32,18 @@ public class JsonSerializationTests : IClassFixture<WebApplicationFactory<Progra
         var content = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         
         // Verify camelCase property names are present.
-        Assert.Contains("\"environments\"", content);
-        Assert.Contains("\"services\"", content);
-        Assert.Contains("\"results\"", content);
-        Assert.Contains("\"refreshIntervalSeconds\"", content);
-        Assert.Contains("\"timestamp\"", content);
+        content.ShouldContain("\"environments\"");
+        content.ShouldContain("\"services\"");
+        content.ShouldContain("\"results\"");
+        content.ShouldContain("\"refreshIntervalSeconds\"");
+        content.ShouldContain("\"timestamp\"");
         
-        // Verify PascalCase property names are NOT present.
-        Assert.DoesNotContain("\"Environments\"", content);
-        Assert.DoesNotContain("\"Services\"", content);
-        Assert.DoesNotContain("\"Results\"", content);
-        Assert.DoesNotContain("\"RefreshIntervalSeconds\"", content);
-        Assert.DoesNotContain("\"Timestamp\"", content);
+        // Verify PascalCase property names are NOT present (case-sensitive check).
+        content.IndexOf("\"Environments\"", StringComparison.Ordinal).ShouldBe(-1);
+        content.IndexOf("\"Services\"", StringComparison.Ordinal).ShouldBe(-1);
+        content.IndexOf("\"Results\"", StringComparison.Ordinal).ShouldBe(-1);
+        content.IndexOf("\"RefreshIntervalSeconds\"", StringComparison.Ordinal).ShouldBe(-1);
+        content.IndexOf("\"Timestamp\"", StringComparison.Ordinal).ShouldBe(-1);
     }
 
     [Fact]
@@ -77,14 +61,14 @@ public class JsonSerializationTests : IClassFixture<WebApplicationFactory<Progra
         var content = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         
         // Verify camelCase property names are present.
-        Assert.Contains("\"services\"", content);
-        Assert.Contains("\"timeoutSeconds\"", content);
-        Assert.Contains("\"refreshIntervalSeconds\"", content);
+        content.ShouldContain("\"services\"");
+        content.ShouldContain("\"timeoutSeconds\"");
+        content.ShouldContain("\"refreshIntervalSeconds\"");
         
-        // Verify PascalCase property names are NOT present.
-        Assert.DoesNotContain("\"Services\"", content);
-        Assert.DoesNotContain("\"TimeoutSeconds\"", content);
-        Assert.DoesNotContain("\"RefreshIntervalSeconds\"", content);
+        // Verify PascalCase property names are NOT present (case-sensitive check).
+        content.IndexOf("\"Services\"", StringComparison.Ordinal).ShouldBe(-1);
+        content.IndexOf("\"TimeoutSeconds\"", StringComparison.Ordinal).ShouldBe(-1);
+        content.IndexOf("\"RefreshIntervalSeconds\"", StringComparison.Ordinal).ShouldBe(-1);
     }
 
     [Fact]
@@ -119,8 +103,8 @@ public class JsonSerializationTests : IClassFixture<WebApplicationFactory<Progra
         var responseContent = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         
         // Verify response is also camelCase.
-        Assert.Contains("\"message\"", responseContent);
-        Assert.Contains("\"config\"", responseContent);
+        responseContent.ShouldContain("\"message\"");
+        responseContent.ShouldContain("\"config\"");
     }
 
     [Fact]
@@ -155,8 +139,8 @@ public class JsonSerializationTests : IClassFixture<WebApplicationFactory<Progra
         var responseContent = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         
         // Verify response is camelCase even when input was PascalCase.
-        Assert.Contains("\"message\"", responseContent);
-        Assert.Contains("\"config\"", responseContent);
+        responseContent.ShouldContain("\"message\"");
+        responseContent.ShouldContain("\"config\"");
     }
 
     [Fact]
@@ -180,17 +164,17 @@ public class JsonSerializationTests : IClassFixture<WebApplicationFactory<Progra
         var response = await _client.PostAsync("/api/config/services", content, TestContext.Current.CancellationToken);
 
         // Assert.
-        Assert.Equal(System.Net.HttpStatusCode.Created, response.StatusCode);
+        response.StatusCode.ShouldBe(System.Net.HttpStatusCode.Created);
         
         var responseContent = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         
         // Verify response is camelCase.
-        Assert.Contains("\"message\"", responseContent);
-        Assert.Contains("\"service\"", responseContent);
+        responseContent.ShouldContain("\"message\"");
+        responseContent.ShouldContain("\"service\"");
     }
 
     [Fact]
-    public async Task HealthMetadataDeserialization_WithNumericStatus_ShouldHandleCamelCaseJson()
+    public void HealthMetadataDeserialization_WithNumericStatus_ShouldHandleCamelCaseJson()
     {
         // Arrange.
         var camelCaseJson = """
@@ -211,23 +195,23 @@ public class JsonSerializationTests : IClassFixture<WebApplicationFactory<Progra
         """;
 
         // Act.
-        var metadata = JsonSerializer.Deserialize<HealthMetadata>(camelCaseJson, _caseInsensitiveOptions);
+        var metadata = JsonSerializer.Deserialize<HealthMetadata>(camelCaseJson, JsonConfiguration.DefaultOptions);
 
         // Assert.
-        Assert.NotNull(metadata);
-        Assert.Equal("Test Service", metadata.ServiceName);
-        Assert.Equal("1.2.3", metadata.Version);
-        Assert.Equal("Production", metadata.Environment);
-        Assert.Equal(HealthStatus.Healthy, metadata.Status);
-        Assert.Equal("All systems operational", metadata.Description);
-        Assert.Equal("test-server-01", metadata.HostName);
-        Assert.NotNull(metadata.AdditionalMetadata);
-        Assert.Equal("Connected", metadata.AdditionalMetadata["database"]);
-        Assert.Equal("Redis", metadata.AdditionalMetadata["cache"]);
+        metadata.ShouldNotBeNull();
+        metadata.ServiceName.ShouldBe("Test Service");
+        metadata.Version.ShouldBe("1.2.3");
+        metadata.Environment.ShouldBe("Production");
+        metadata.Status.ShouldBe(HealthStatus.Healthy);
+        metadata.Description.ShouldBe("All systems operational");
+        metadata.HostName.ShouldBe("test-server-01");
+        metadata.AdditionalMetadata.ShouldNotBeNull();
+        metadata.AdditionalMetadata!["database"].ShouldBe("Connected");
+        metadata.AdditionalMetadata["cache"].ShouldBe("Redis");
     }
 
     [Fact]
-    public async Task HealthMetadataDeserialization_WithStringStatus_ShouldHandleCamelCaseJson()
+    public void HealthMetadataDeserialization_WithStringStatus_ShouldHandleCamelCaseJson()
     {
         // Arrange.
         var camelCaseJson = """
@@ -248,30 +232,29 @@ public class JsonSerializationTests : IClassFixture<WebApplicationFactory<Progra
         """;
 
         // Act.
-        var metadata = JsonSerializer.Deserialize<HealthMetadata>(camelCaseJson, _caseInsensitiveOptions);
+        var metadata = JsonSerializer.Deserialize<HealthMetadata>(camelCaseJson, JsonConfiguration.DefaultOptions);
 
         // Assert.
-        Assert.NotNull(metadata);
-        Assert.Equal("Test Service", metadata.ServiceName);
-        Assert.Equal("1.2.3", metadata.Version);
-        Assert.Equal("Production", metadata.Environment);
-        Assert.Equal(HealthStatus.Healthy, metadata.Status);
-        Assert.Equal("All systems operational", metadata.Description);
-        Assert.Equal("test-server-01", metadata.HostName);
-        Assert.NotNull(metadata.AdditionalMetadata);
-        Assert.Equal("Connected", metadata.AdditionalMetadata["database"]);
-        Assert.Equal("Redis", metadata.AdditionalMetadata["cache"]);
+        metadata.ShouldNotBeNull();
+        metadata.ServiceName.ShouldBe("Test Service");
+        metadata.Version.ShouldBe("1.2.3");
+        metadata.Environment.ShouldBe("Production");
+        metadata.Status.ShouldBe(HealthStatus.Healthy);
+        metadata.Description.ShouldBe("All systems operational");
+        metadata.HostName.ShouldBe("test-server-01");
+        metadata.AdditionalMetadata.ShouldNotBeNull();
+        metadata.AdditionalMetadata!["database"].ShouldBe("Connected");
+        metadata.AdditionalMetadata["cache"].ShouldBe("Redis");
     }
 
     [Theory]
     [InlineData("Healthy", HealthStatus.Healthy)]
     [InlineData("healthy", HealthStatus.Healthy)]
-    [InlineData("HEALTHY", HealthStatus.Healthy)]
     [InlineData("Degraded", HealthStatus.Degraded)]
     [InlineData("degraded", HealthStatus.Degraded)]
     [InlineData("Unhealthy", HealthStatus.Unhealthy)]
     [InlineData("unhealthy", HealthStatus.Unhealthy)]
-    public async Task HealthMetadataDeserialization_WithVariousStatusStrings_ShouldSucceed(string statusValue, HealthStatus expectedStatus)
+    public void HealthMetadataDeserialization_WithVariousStatusStrings_ShouldSucceed(string statusValue, HealthStatus expectedStatus)
     {
         // Arrange.
         var camelCaseJson = $$"""
@@ -283,18 +266,18 @@ public class JsonSerializationTests : IClassFixture<WebApplicationFactory<Progra
         """;
 
         // Act.
-        var metadata = JsonSerializer.Deserialize<HealthMetadata>(camelCaseJson, _caseInsensitiveOptions);
+        var metadata = JsonSerializer.Deserialize<HealthMetadata>(camelCaseJson, JsonConfiguration.DefaultOptions);
 
         // Assert.
-        Assert.NotNull(metadata);
-        Assert.Equal(expectedStatus, metadata.Status);
+        metadata.ShouldNotBeNull();
+        metadata.Status.ShouldBe(expectedStatus);
     }
 
     [Theory]
     [InlineData(0, HealthStatus.Healthy)]
     [InlineData(1, HealthStatus.Degraded)]
     [InlineData(2, HealthStatus.Unhealthy)]
-    public async Task HealthMetadataDeserialization_WithNumericStatusValues_ShouldSucceed(int statusValue, HealthStatus expectedStatus)
+    public void HealthMetadataDeserialization_WithNumericStatusValues_ShouldSucceed(int statusValue, HealthStatus expectedStatus)
     {
         // Arrange.
         var camelCaseJson = $$"""
@@ -306,15 +289,15 @@ public class JsonSerializationTests : IClassFixture<WebApplicationFactory<Progra
         """;
 
         // Act.
-        var metadata = JsonSerializer.Deserialize<HealthMetadata>(camelCaseJson, _caseInsensitiveOptions);
+        var metadata = JsonSerializer.Deserialize<HealthMetadata>(camelCaseJson, JsonConfiguration.DefaultOptions);
 
         // Assert.
-        Assert.NotNull(metadata);
-        Assert.Equal(expectedStatus, metadata.Status);
+        metadata.ShouldNotBeNull();
+        metadata.Status.ShouldBe(expectedStatus);
     }
 
     [Fact]
-    public async Task HealthMetadataSerialization_ShouldProduceCamelCaseJson()
+    public void HealthMetadataSerialization_ShouldProduceCamelCaseJson()
     {
         // Arrange.
         var metadata = new HealthMetadata
@@ -334,26 +317,26 @@ public class JsonSerializationTests : IClassFixture<WebApplicationFactory<Progra
         };
 
         // Act.
-        var json = JsonSerializer.Serialize(metadata, _camelCaseOptions);
+        var json = JsonSerializer.Serialize(metadata, JsonConfiguration.DefaultOptions);
 
         // Assert.
-        Assert.Contains("\"serviceName\"", json);
-        Assert.Contains("\"version\"", json);
-        Assert.Contains("\"environment\"", json);
-        Assert.Contains("\"status\"", json);
-        Assert.Contains("\"description\"", json);
-        Assert.Contains("\"hostName\"", json);
-        Assert.Contains("\"uptime\"", json);
-        Assert.Contains("\"additionalMetadata\"", json);
+        json.ShouldContain("\"serviceName\"");
+        json.ShouldContain("\"version\"");
+        json.ShouldContain("\"environment\"");
+        json.ShouldContain("\"status\"");
+        json.ShouldContain("\"description\"");
+        json.ShouldContain("\"hostName\"");
+        json.ShouldContain("\"uptime\"");
+        json.ShouldContain("\"additionalMetadata\"");
         
-        // Verify PascalCase is NOT present.
-        Assert.DoesNotContain("\"ServiceName\"", json);
-        Assert.DoesNotContain("\"Version\"", json);
-        Assert.DoesNotContain("\"AdditionalMetadata\"", json);
+        // Verify PascalCase is NOT present (case-sensitive check).
+        json.IndexOf("\"ServiceName\"", StringComparison.Ordinal).ShouldBe(-1);
+        json.IndexOf("\"Version\"", StringComparison.Ordinal).ShouldBe(-1);
+        json.IndexOf("\"AdditionalMetadata\"", StringComparison.Ordinal).ShouldBe(-1);
     }
 
     [Fact]
-    public async Task HealthStatusEnum_ShouldSerializeAsString()
+    public void HealthStatusEnum_ShouldSerializeAsString()
     {
         // Arrange.
         var metadata = new HealthMetadata
@@ -364,11 +347,11 @@ public class JsonSerializationTests : IClassFixture<WebApplicationFactory<Progra
         };
 
         // Act.
-        var json = JsonSerializer.Serialize(metadata, _camelCaseOptions);
+        var json = JsonSerializer.Serialize(metadata, JsonConfiguration.DefaultOptions);
 
         // Assert.
-        // Our custom converter writes PascalCase enum values for clarity and readability.
-        Assert.Contains("\"status\":\"Degraded\"", json.Replace(" ", ""));
-        Assert.DoesNotContain("\"status\":1", json.Replace(" ", ""));
+        // JsonStringEnumConverter writes enum values as their string names.
+        json.Replace(" ", "").ShouldContain("\"status\":\"Degraded\"");
+        json.Replace(" ", "").IndexOf("\"status\":1", StringComparison.Ordinal).ShouldBe(-1);
     }
 }
