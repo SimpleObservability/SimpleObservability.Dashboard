@@ -16,7 +16,12 @@ public static class GetConfigurationEndpoint
     {
         app.MapGet("/api/config", (ConfigurationHolder configHolder, ILogger<DashboardConfiguration> logger) =>
         {
-            logger.LogInformation("Returning configuration. EnvironmentOrder: {EnvironmentOrder}",
+            logger.LogInformation("Retrieving dashboard configuration.");
+
+            logger.LogDebug("Configuration details. Services: {ServiceCount}, RefreshInterval: {RefreshInterval}s, Timeout: {Timeout}s, EnvironmentOrder: {EnvironmentOrder}",
+                configHolder.Config.Services.Count,
+                configHolder.Config.RefreshIntervalSeconds,
+                configHolder.Config.TimeoutSeconds,
                 configHolder.Config.EnvironmentOrder != null ? string.Join(", ", configHolder.Config.EnvironmentOrder) : "null");
 
             return Results.Ok(configHolder.Config);

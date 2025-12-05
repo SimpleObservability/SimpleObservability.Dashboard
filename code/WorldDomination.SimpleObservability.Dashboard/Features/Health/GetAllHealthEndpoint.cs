@@ -15,9 +15,19 @@ public static class GetAllHealthEndpoint
     /// <returns>The endpoint route builder for chaining.</returns>
     public static IEndpointRouteBuilder MapGetAllHealth(this IEndpointRouteBuilder app)
     {
-        app.MapGet("/api/health", async (ConfigurationHolder configHolder, IHealthCheckService healthCheckService, CancellationToken cancellationToken) =>
+        app.MapGet("/api/health", async (ConfigurationHolder configHolder, IHealthCheckService healthCheckService, ILogger<IHealthCheckService> logger, CancellationToken cancellationToken) =>
         {
+            logger.LogInformation("Retrieving health status for all services.");
+
+            logger.LogDebug("Checking health for {ServiceCount} services across {EnvironmentCount} environments.",
+                configHolder.Config.Services.Count,
+                configHolder.Config.Environments.Count);
+
             var results = await healthCheckService.CheckAllHealthAsync(cancellationToken).ConfigureAwait(false);
+
+            logger.LogDebug("Health check completed. Results count: {ResultCount}", results.Count);
+
+            logger.LogInformation("Health status retrieved successfully. Total results: {ResultCount}", results.Count);
 
             return Results.Ok(new
             {

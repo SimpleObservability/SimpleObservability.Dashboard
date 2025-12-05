@@ -1,6 +1,6 @@
 using WorldDomination.SimpleObservability.Dashboard.Configuration;
 
-namespace WorldDomination.SimpleObservability.Dashboard.Tests.Configuration;
+namespace WorldDomination.SimpleObservability.Dashboard.Tests.ConfigurationTests;
 
 /// <summary>
 /// Tests for the <see cref="ConfigurationHolder"/> class.

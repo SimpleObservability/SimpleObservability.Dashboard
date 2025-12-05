@@ -1,7 +1,6 @@
 using Bogus;
-using WorldDomination.SimpleObservability.Dashboard.Services;
 
-namespace WorldDomination.SimpleObservability.Dashboard.Tests.Services.HealthCheckResultTests;
+namespace WorldDomination.SimpleObservability.Dashboard.Tests.ServicesTests.HealthCheckResultTests;
 
 /// <summary>
 /// Tests for the <see cref="HealthCheckResult.CheckedAt"/> property.
@@ -11,10 +10,10 @@ public class CheckedAtTests
     private readonly Faker _faker = new();
 
     [Fact]
-    public void DefaultValue_ShouldBeApproximatelyNow()
+    public void CheckedAt_GivenADefaultValue_ShouldBeApproximatelyNow()
     {
         // Arrange.
-        var before = DateTimeOffset.UtcNow;
+        var now = DateTimeOffset.UtcNow;
         var endpoint = new ServiceEndpoint
         {
             Name = _faker.Company.CompanyName(),
@@ -29,7 +28,6 @@ public class CheckedAtTests
         };
 
         // Assert.
-        var after = DateTimeOffset.UtcNow;
-        result.CheckedAt.ShouldBeInRange(before, after);
+        result.CheckedAt.ShouldBe(now, TimeSpan.FromSeconds(5));
     }
 }

@@ -1,6 +1,4 @@
-using WorldDomination.SimpleObservability.Dashboard.Services;
-
-namespace WorldDomination.SimpleObservability.Dashboard.Tests.Services.HealthCheckResultTests;
+namespace WorldDomination.SimpleObservability.Dashboard.Tests.ServicesTests.HealthCheckResultTests;
 
 /// <summary>
 /// Tests for the <see cref="HealthCheckResult"/> record equality.
@@ -8,7 +6,7 @@ namespace WorldDomination.SimpleObservability.Dashboard.Tests.Services.HealthChe
 public class EqualityTests
 {
     [Fact]
-    public void WithEqualValues_ShouldBeEqual()
+    public void Equals_GivenEqualValues_ShouldBeEqual()
     {
         // Arrange.
         var endpoint = new ServiceEndpoint
@@ -42,7 +40,7 @@ public class EqualityTests
     }
 
     [Fact]
-    public void WithDifferentValues_ShouldNotBeEqual()
+    public void Equals_GivenDifferentValues_ShouldNotBeEqual()
     {
         // Arrange.
         var endpoint1 = new ServiceEndpoint

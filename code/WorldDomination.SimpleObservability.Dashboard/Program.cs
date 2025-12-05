@@ -4,72 +4,93 @@ using WorldDomination.SimpleObservability.Dashboard.Services;
 using WorldDomination.SimpleObservability.Dashboard.Configuration;
 using WorldDomination.SimpleObservability.Dashboard.Features;
 
-var builder = WebApplication.CreateBuilder(args);
+// Configure Serilog early for startup logging.
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .CreateBootstrapLogger();
 
-// Configure Serilog.
-builder.Host.UseSerilog((context, services, configuration) => configuration
-    .ReadFrom.Configuration(context.Configuration)
-    .ReadFrom.Services(services)
-    .Enrich.FromLogContext());
-
-// Add optional dashboard settings file.
-builder.Configuration.AddDashboardSettingsFile();
-
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
-
-// Configure JSON serialization to use centralized options.
-builder.Services.ConfigureHttpJsonOptions(options =>
+try
 {
-    options.SerializerOptions.PropertyNamingPolicy = JsonConfiguration.DefaultOptions.PropertyNamingPolicy;
-    options.SerializerOptions.PropertyNameCaseInsensitive = JsonConfiguration.DefaultOptions.PropertyNameCaseInsensitive;
-    options.SerializerOptions.DefaultIgnoreCondition = JsonConfiguration.DefaultOptions.DefaultIgnoreCondition;
+    var builder = WebApplication.CreateBuilder(args);
 
-    foreach (var converter in JsonConfiguration.DefaultOptions.Converters)
-    {
-        options.SerializerOptions.Converters.Add(converter);
-    }
-});
+    // Configure Serilog.
+    builder.Host.UseSerilog((context, services, configuration) => configuration
+        .ReadFrom.Configuration(context.Configuration)
+        .ReadFrom.Services(services)
+        .Enrich.FromLogContext());
 
-// Configure HttpClient for health checks.
-builder.Services.AddHttpClient<HealthHttpClient>()
-    .ConfigureHttpClient(client =>
+    // Add optional dashboard settings file.
+    builder.Configuration.AddDashboardSettingsFile();
+
+    // Add services to the container.
+    // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+    builder.Services.AddOpenApi();
+
+    // Configure JSON serialization to use centralized options.
+    builder.Services.ConfigureHttpJsonOptions(options =>
     {
-        client.DefaultRequestHeaders.Add("User-Agent", "SimpleObservability/1.0");
+        options.SerializerOptions.PropertyNamingPolicy = JsonConfiguration.DefaultOptions.PropertyNamingPolicy;
+        options.SerializerOptions.PropertyNameCaseInsensitive = JsonConfiguration.DefaultOptions.PropertyNameCaseInsensitive;
+        options.SerializerOptions.DefaultIgnoreCondition = JsonConfiguration.DefaultOptions.DefaultIgnoreCondition;
+
+        foreach (var converter in JsonConfiguration.DefaultOptions.Converters)
+        {
+            options.SerializerOptions.Converters.Add(converter);
+        }
     });
-builder.Services.AddScoped<IHealthHttpClient, HealthHttpClient>();
 
-// Load dashboard configuration from configuration sources.
-var dashboardConfig = DashboardConfigurationLoader.Load(builder.Configuration);
+    // Configure HttpClient for health checks.
+    builder.Services.AddHttpClient<HealthHttpClient>()
+        .ConfigureHttpClient(client =>
+        {
+            client.DefaultRequestHeaders.Add("User-Agent", "SimpleObservability/1.0");
+        });
+    builder.Services.AddScoped<IHealthHttpClient, HealthHttpClient>();
 
-// Use a mutable wrapper to allow in-memory updates.
-var configHolder = new ConfigurationHolder { Config = dashboardConfig };
-builder.Services.AddSingleton(configHolder);
+    // Load dashboard configuration from configuration sources.
+    var dashboardConfig = DashboardConfigurationLoader.Load(builder.Configuration);
 
-// Register a factory that always returns the current configuration from the holder.
-builder.Services.AddScoped(serviceProvider =>
-{
-    var holder = serviceProvider.GetRequiredService<ConfigurationHolder>();
-    return holder.Config;
-});
+    // Use a mutable wrapper to allow in-memory updates.
+    var configHolder = new ConfigurationHolder { Config = dashboardConfig };
+    builder.Services.AddSingleton(configHolder);
 
-// Register health check service.
-builder.Services.AddScoped<IHealthCheckService, HealthCheckService>();
+    // Register a factory that always returns the current configuration from the holder.
+    builder.Services.AddScoped(serviceProvider =>
+    {
+        var holder = serviceProvider.GetRequiredService<ConfigurationHolder>();
+        return holder.Config;
+    });
 
-var app = builder.Build();
+    // Register health check service.
+    builder.Services.AddScoped<IHealthCheckService, HealthCheckService>();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
+    var app = builder.Build();
+
+    // Add Serilog request logging middleware.
+    app.UseSerilogRequestLogging();
+
+    // Configure the HTTP request pipeline.
+    if (app.Environment.IsDevelopment())
+    {
+        app.MapOpenApi();
+    }
+
+    // Serve static files (dashboard HTML).
+    app.UseDefaultFiles();
+    app.UseStaticFiles();
+
+    // Map all endpoints.
+    app.MapAllEndpoints();
+
+    Log.Information("Starting SimpleObservability Dashboard");
+
+    app.Run();
 }
-
-// Serve static files (dashboard HTML).
-app.UseDefaultFiles();
-app.UseStaticFiles();
-
-// Map all endpoints.
-app.MapAllEndpoints();
-
-app.Run();
+catch (Exception exception)
+{
+    Log.Fatal(exception, "Application terminated unexpectedly");
+}
+finally
+{
+    Log.CloseAndFlush();
+}

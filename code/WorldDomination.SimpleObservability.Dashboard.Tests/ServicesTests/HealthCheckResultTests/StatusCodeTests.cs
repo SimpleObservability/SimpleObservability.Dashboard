@@ -1,8 +1,6 @@
-using System.Net;
 using Bogus;
-using WorldDomination.SimpleObservability.Dashboard.Services;
 
-namespace WorldDomination.SimpleObservability.Dashboard.Tests.Services.HealthCheckResultTests;
+namespace WorldDomination.SimpleObservability.Dashboard.Tests.ServicesTests.HealthCheckResultTests;
 
 /// <summary>
 /// Tests for the <see cref="HealthCheckResult.StatusCode"/> property.

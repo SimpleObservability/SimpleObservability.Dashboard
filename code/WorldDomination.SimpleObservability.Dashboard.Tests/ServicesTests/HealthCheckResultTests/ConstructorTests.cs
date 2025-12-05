@@ -1,8 +1,6 @@
-using System.Net;
 using Bogus;
-using WorldDomination.SimpleObservability.Dashboard.Services;
 
-namespace WorldDomination.SimpleObservability.Dashboard.Tests.Services.HealthCheckResultTests;
+namespace WorldDomination.SimpleObservability.Dashboard.Tests.ServicesTests.HealthCheckResultTests;
 
 /// <summary>
 /// Tests for the <see cref="HealthCheckResult"/> constructor.
@@ -12,7 +10,7 @@ public class ConstructorTests
     private readonly Faker _faker = new();
 
     [Fact]
-    public void WithRequiredProperties_ShouldCreateInstance()
+    public void Constructor_GivenRequiredProperties_ShouldCreateInstance()
     {
         // Arrange.
         var endpoint = new ServiceEndpoint
@@ -39,7 +37,7 @@ public class ConstructorTests
     }
 
     [Fact]
-    public void WithSuccessfulHealthCheck_ShouldCreateInstance()
+    public void Constructor_GivenSuccessfulHealthCheck_ShouldCreateInstance()
     {
         // Arrange.
         var endpoint = new ServiceEndpoint
@@ -74,7 +72,7 @@ public class ConstructorTests
     }
 
     [Fact]
-    public void WithFailedHealthCheck_ShouldCreateInstance()
+    public void Constructor_GivenFailedHealthCheck_ShouldCreateInstance()
     {
         // Arrange.
         var endpoint = new ServiceEndpoint
@@ -104,7 +102,7 @@ public class ConstructorTests
     }
 
     [Fact]
-    public void WithDisabledService_ShouldCreateInstance()
+    public void Constructor_GivenDisabledService_ShouldCreateInstance()
     {
         // Arrange.
         var endpoint = new ServiceEndpoint
