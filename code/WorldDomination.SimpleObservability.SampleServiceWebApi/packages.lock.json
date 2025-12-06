@@ -4,9 +4,9 @@
     "net10.0": {
       "WorldDomination.SimpleObservability": {
         "type": "Direct",
-        "requested": "[1.1.1-b1, )",
-        "resolved": "1.1.1-b1",
-        "contentHash": "cw9OVL7q69VOQfk+O1AqpB1GxDAhfbMakHPsTXLQqxcsmMwhEOhmGqF5sDdVijHm2qDHjqiGFu8tMtnkfHnLRA=="
+        "requested": "[1.0.0-beta03, )",
+        "resolved": "1.0.0-beta03",
+        "contentHash": "iGAlCI5yFYntaxv/Qwnoae9qG1HMcFRHicYKAxU3ltl65zOhN0kbHTgqvOhAkXrOPdlYI86RkJwTxLQ108LkdQ=="
       }
     }
   }

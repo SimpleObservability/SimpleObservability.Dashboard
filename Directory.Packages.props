@@ -16,7 +16,7 @@
     <PackageVersion Include="Serilog.AspNetCore" Version="10.0.0" />
     <PackageVersion Include="Serilog.Settings.Configuration" Version="10.0.0" />
     <PackageVersion Include="Shouldly" Version="4.3.0" />
-    <PackageVersion Include="WorldDomination.SimpleObservability" Version="1.1.1-b1" />
+    <PackageVersion Include="WorldDomination.SimpleObservability" Version="1.0.0-beta03" />
     <PackageVersion Include="xunit.v3.mtp-v2" Version="3.2.0" />
   </ItemGroup>
 </Project>

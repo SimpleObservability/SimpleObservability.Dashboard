@@ -543,7 +543,7 @@
           "Microsoft.AspNetCore.OpenApi": "[10.0.0, )",
           "Serilog.AspNetCore": "[10.0.0, )",
           "Serilog.Settings.Configuration": "[10.0.0, )",
-          "WorldDomination.SimpleObservability": "[1.1.1-b1, )"
+          "WorldDomination.SimpleObservability": "[1.0.0-beta03, )"
         }
       },
       "Microsoft.AspNetCore.OpenApi": {
@@ -615,8 +615,8 @@
       "WorldDomination.SimpleObservability": {
         "type": "CentralTransitive",
         "requested": "[1.1.1-b1, )",
-        "resolved": "1.1.1-b1",
-        "contentHash": "cw9OVL7q69VOQfk+O1AqpB1GxDAhfbMakHPsTXLQqxcsmMwhEOhmGqF5sDdVijHm2qDHjqiGFu8tMtnkfHnLRA==",
+        "resolved": "1.0.0-beta03",
+        "contentHash": "iGAlCI5yFYntaxv/Qwnoae9qG1HMcFRHicYKAxU3ltl65zOhN0kbHTgqvOhAkXrOPdlYI86RkJwTxLQ108LkdQ==",
         "dependencies": {
           "Microsoft.Extensions.Configuration.Abstractions": "10.0.0",
           "Microsoft.Extensions.Configuration.Binder": "10.0.0",
