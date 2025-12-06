@@ -4,12 +4,12 @@ namespace WorldDomination.SimpleObservability.Dashboard.Tests.FeatureTests.Confi
 
 public class PostConfigurationEndpointTests(WebApplicationFactory<Program> factory) : IClassFixture<WebApplicationFactory<Program>>
 {
-    private readonly HttpClient _client = factory.CreateClient();
-
     [Fact]
     public async Task PostServiceEndpoint_ShouldAcceptCamelCaseJson()
     {
         // Arrange.
+        using var client = factory.CreateClient();
+
         var serviceJson = """
         {
           "name": "New Test Service",
@@ -24,7 +24,7 @@ public class PostConfigurationEndpointTests(WebApplicationFactory<Program> facto
         var content = new StringContent(serviceJson, System.Text.Encoding.UTF8, "application/json");
 
         // Act.
-        var response = await _client.PostAsync("/api/config/services", content, TestContext.Current.CancellationToken);
+        var response = await client.PostAsync("/api/config/services", content, TestContext.Current.CancellationToken);
 
         // Assert.
         response.StatusCode.ShouldBe(System.Net.HttpStatusCode.Created);

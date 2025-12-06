@@ -4,12 +4,12 @@ namespace WorldDomination.SimpleObservability.Dashboard.Tests.FeatureTests.Confi
 
 public class PutConfigurationEndpointTests(WebApplicationFactory<Program> factory) : IClassFixture<WebApplicationFactory<Program>>
 {
-    private readonly HttpClient _client = factory.CreateClient();
-
     [Fact]
     public async Task PutConfigEndpoint_ShouldAcceptCamelCaseJson()
     {
         // Arrange.
+        using var client = factory.CreateClient();
+
         var configJson = """
         {
           "services": [
@@ -30,7 +30,7 @@ public class PutConfigurationEndpointTests(WebApplicationFactory<Program> factor
         var content = new StringContent(configJson, System.Text.Encoding.UTF8, "application/json");
 
         // Act.
-        var response = await _client.PutAsync("/api/config", content, TestContext.Current.CancellationToken);
+        var response = await client.PutAsync("/api/config", content, TestContext.Current.CancellationToken);
 
         // Assert.
         response.EnsureSuccessStatusCode();
@@ -46,6 +46,8 @@ public class PutConfigurationEndpointTests(WebApplicationFactory<Program> factor
     public async Task PutConfigEndpoint_ShouldAcceptPascalCaseJson()
     {
         // Arrange.
+        using var client = factory.CreateClient();
+
         var configJson = """
         {
           "Services": [
@@ -66,7 +68,7 @@ public class PutConfigurationEndpointTests(WebApplicationFactory<Program> factor
         var content = new StringContent(configJson, System.Text.Encoding.UTF8, "application/json");
 
         // Act.
-        var response = await _client.PutAsync("/api/config", content, TestContext.Current.CancellationToken);
+        var response = await client.PutAsync("/api/config", content, TestContext.Current.CancellationToken);
 
         // Assert.
         response.EnsureSuccessStatusCode();

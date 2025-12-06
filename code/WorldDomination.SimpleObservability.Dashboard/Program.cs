@@ -4,8 +4,8 @@ using WorldDomination.SimpleObservability.Dashboard.Services;
 using WorldDomination.SimpleObservability.Dashboard.Configuration;
 using WorldDomination.SimpleObservability.Dashboard.Features;
 
-// Configure Serilog early for startup logging.
-Log.Logger = new LoggerConfiguration()
+// Configure Serilog early for startup logging (instance-based, not static).
+using var bootstrapLogger = new LoggerConfiguration()
     .WriteTo.Console()
     .CreateBootstrapLogger();
 
@@ -82,15 +82,11 @@ try
     // Map all endpoints.
     app.MapAllEndpoints();
 
-    Log.Information("Starting SimpleObservability Dashboard");
+    bootstrapLogger.Information("Starting SimpleObservability Dashboard");
 
     app.Run();
 }
 catch (Exception exception)
 {
-    Log.Fatal(exception, "Application terminated unexpectedly");
-}
-finally
-{
-    Log.CloseAndFlush();
+    bootstrapLogger.Fatal(exception, "Application terminated unexpectedly");
 }

@@ -4,16 +4,14 @@ namespace WorldDomination.SimpleObservability.Dashboard.Tests.FeatureTests.Confi
 
 public class GetConfigurationEndpointTests(WebApplicationFactory<Program> factory) : IClassFixture<WebApplicationFactory<Program>>
 {
-    private readonly HttpClient _client = factory.CreateClient();
-
     [Fact]
     public async Task GetConfigEndpoint_ShouldReturnCamelCaseJson()
     {
         // Arrange.
-        // (The test factory will use in-memory configuration)
+        using var client = factory.CreateClient();
 
         // Act.
-        var response = await _client.GetAsync("/api/config", TestContext.Current.CancellationToken);
+        var response = await client.GetAsync("/api/config", TestContext.Current.CancellationToken);
 
         // Assert.
         response.EnsureSuccessStatusCode();

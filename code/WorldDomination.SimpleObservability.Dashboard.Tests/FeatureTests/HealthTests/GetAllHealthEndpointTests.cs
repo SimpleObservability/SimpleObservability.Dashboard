@@ -4,16 +4,14 @@ namespace WorldDomination.SimpleObservability.Dashboard.Tests.FeatureTests.Healt
 
 public class GetAllHealthEndpointTests(WebApplicationFactory<Program> factory) : IClassFixture<WebApplicationFactory<Program>>
 {
-    private readonly HttpClient _client = factory.CreateClient();
-
     [Fact]
     public async Task GetHealthEndpoint_ShouldReturnCamelCaseJson()
     {
         // Arrange.
-        // (The test factory will use in-memory configuration)
+        using var client = factory.CreateClient();
 
         // Act.
-        var response = await _client.GetAsync("/api/health", TestContext.Current.CancellationToken);
+        var response = await client.GetAsync("/api/health", TestContext.Current.CancellationToken);
 
         // Assert.
         response.EnsureSuccessStatusCode();
