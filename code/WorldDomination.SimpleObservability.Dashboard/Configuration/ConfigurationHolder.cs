@@ -7,6 +7,7 @@ public class ConfigurationHolder
 {
     /// <summary>
     /// Gets or sets the current dashboard configuration.
+    /// Initialized with a default configuration to ensure it's never null.
     /// </summary>
-    public DashboardConfiguration Config { get; set; } = null!;
+    public DashboardConfiguration Config { get; set; } = DashboardConfigurationLoader.CreateDefaultConfiguration();
 }

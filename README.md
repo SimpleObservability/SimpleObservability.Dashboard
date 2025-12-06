@@ -23,6 +23,8 @@ This exposes your own service meta-data in an easy to read dashboard - not just 
 
 ### Using Docker (Recommended)
 
+The Docker image ships with an empty configuration. You need to provide your own configuration by volume-mounting a file.
+
 ```bash
 # Pull the image
 docker pull simple-observatory/dashboard:latest
@@ -35,9 +37,13 @@ docker run -d \
   simple-observatory/dashboard:latest
 ```
 
+> **Note:** The Docker image does not include sample services. Sample services are only available when running locally in Development mode for testing purposes.
+
 Access the dashboard at `http://localhost:8080`
 
 ### Running Locally
+
+When running locally in Development mode, the dashboard includes sample services for testing:
 
 ```bash
 # Clone the repository
@@ -51,6 +57,8 @@ docker compose up
 cd code/WebApi/WorldDomination.SimpleObservability.Dashboard
 dotnet run
 ```
+
+> **Note:** Sample services are automatically loaded from `dashboardsettings.Development.json` when running in Development mode. This file is excluded from Docker builds.
 
 Access the dashboard at `http://localhost:5000`
 

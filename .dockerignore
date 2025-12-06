@@ -11,3 +11,5 @@
 **/docker-compose*
 **/*.md
 **/LICENSE
+**/dashboardsettings.Development.json
+**/appsettings.Development.json

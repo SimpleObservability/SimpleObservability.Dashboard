@@ -20,7 +20,10 @@ try
         .Enrich.FromLogContext());
 
     // Add optional dashboard settings file.
-    builder.Configuration.AddDashboardSettingsFile();
+    var environmentName = builder.Environment.IsDevelopment()
+        ? builder.Environment.EnvironmentName // Dev: we can use a sample hardcoded default settings file.
+        : null; // Not-Development means we don't have any hardcoded default settings file.
+    builder.Configuration.AddDashboardSettingsFile(environmentName: environmentName);
 
     // Add services to the container.
     // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

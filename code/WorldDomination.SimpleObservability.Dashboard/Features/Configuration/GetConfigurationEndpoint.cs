@@ -19,7 +19,7 @@ public static class GetConfigurationEndpoint
             logger.LogInformation("Retrieving dashboard configuration.");
 
             logger.LogDebug("Configuration details. Services: {ServiceCount}, RefreshInterval: {RefreshInterval}s, Timeout: {Timeout}s, EnvironmentOrder: {EnvironmentOrder}",
-                configHolder.Config.Services.Count,
+                configHolder.Config.Services?.Count ?? 0,
                 configHolder.Config.RefreshIntervalSeconds,
                 configHolder.Config.TimeoutSeconds,
                 configHolder.Config.EnvironmentOrder != null ? string.Join(", ", configHolder.Config.EnvironmentOrder) : "null");

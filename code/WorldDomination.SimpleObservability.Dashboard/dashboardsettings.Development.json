@@ -1,0 +1,70 @@
+{
+  "Dashboard": {
+    "services": [
+        {
+            "name": "Google",
+            "environment": "DEV",
+            "healthCheckUrl": "https://www.google.com.au",
+            "description": "Google - no schema",
+            "enabled": true
+        },
+        {
+            "name": "Sample Service 1",
+            "environment": "DEV",
+            "healthCheckUrl": "http://localhost:5001/healthz",
+            "description": "Sample service 1 in development",
+            "enabled": true
+        },
+        {
+            "name": "Sample Service 1",
+            "environment": "UAT",
+            "healthCheckUrl": "http://localhost:5002/healthz",
+            "description": "Sample service 1 in UAT",
+            "enabled": true
+        },
+        {
+            "name": "Sample Service 1",
+            "environment": "PROD",
+            "healthCheckUrl": "http://localhost:5003/healthz",
+            "description": "Sample service 1 in production",
+            "enabled": true
+        },
+        {
+            "name": "Sample Service 2",
+            "environment": "DEV",
+            "healthCheckUrl": "http://localhost:5004/healthz",
+            "description": "Sample service 2 in development",
+            "enabled": true
+        },
+        {
+            "name": "Sample Service 2",
+            "environment": "UAT",
+            "healthCheckUrl": "http://localhost:5005/healthz",
+            "description": "Sample service 2 in UAT",
+            "enabled": true
+        },
+        {
+            "name": "Sample Service 3",
+            "environment": "DEV",
+            "healthCheckUrl": "http://missing.example.com:8080/healthz",
+            "description": "Sample service 3 in DEV - bad domain name",
+            "enabled": true
+        },
+        {
+            "name": "Sample Service 3",
+            "environment": "UAT",
+            "healthCheckUrl": "http://offline.example.com:8080/healthz",
+            "description": "Sample service 3 in UAT - should be offline",
+            "enabled": false
+        }
+    ],
+    "refreshIntervalSeconds": 15,
+    "timeoutSeconds": 5,
+    "environmentOrder": [
+      "PROD",
+      "DEV",
+      "UAT",
+      "ABC"
+    ]
+  }
+}

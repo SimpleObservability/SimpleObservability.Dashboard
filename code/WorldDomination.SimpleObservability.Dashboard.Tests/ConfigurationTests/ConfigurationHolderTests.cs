@@ -19,6 +19,21 @@ public class ConfigurationHolderTests
     }
 
     [Fact]
+    public void Constructor_ShouldInitializeWithDefaultConfiguration()
+    {
+        // Arrange.
+        // Act.
+        var holder = new ConfigurationHolder();
+
+        // Assert.
+        holder.Config.ShouldNotBeNull();
+        holder.Config.Services.ShouldNotBeNull();
+        holder.Config.Services.ShouldBeEmpty();
+        holder.Config.RefreshIntervalSeconds.ShouldBe(30);
+        holder.Config.TimeoutSeconds.ShouldBe(5);
+    }
+
+    [Fact]
     public void Config_ShouldBeSettable()
     {
         // Arrange.
