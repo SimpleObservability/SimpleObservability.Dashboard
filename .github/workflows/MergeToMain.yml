@@ -19,77 +19,23 @@ env:
 jobs:
   build_and_test:
     name: Build and Test
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
-      - name: Build version prefix/suffix
-        run: |
-          echo "VERSION_PREFIX=$(( ${{ github.run_number }} )).0.0" >> $GITHUB_ENV
-          echo "VERSION_SUFFIX=beta" >> $GITHUB_ENV
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v5
-        with:
-          cache: true
-          cache-dependency-path: '**/Directory.Packages.props'
-
-      - run: dotnet restore --verbosity minimal
-
-      - run: dotnet build --configuration Release -p:ContinuousIntegrationBuild=true -p:DebugType=Embedded -p:VersionPrefix=$VERSION_PREFIX --version-suffix $VERSION_SUFFIX
-
-      - name: Run tests with code coverage
-        run: dotnet run --project code/WorldDomination.SimpleObservability.Dashboard.Tests/WorldDomination.SimpleObservability.Dashboard.Tests.csproj --configuration Release --no-build -- --coverage --coverage-output-format cobertura --coverage-output coverage.cobertura.xml
-
-      - name: Upload code coverage to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./code/WorldDomination.SimpleObservability.Dashboard.Tests/**/coverage.cobertura.xml
-          fail_ci_if_error: true
+    uses: ./.github/workflows/reusable-build-test.yml
+    with:
+      version: ${{ github.run_number }}.0.0-beta
+    secrets:
+      codecov_token: ${{ secrets.CODECOV_TOKEN }}
 
   build_and_push_docker:
     name: Build and Push Docker Image
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
-      - name: Build version prefix/suffix
-        run: |
-          echo "VERSION_PREFIX=$(( ${{ github.run_number }} )).0.0" >> $GITHUB_ENV
-          echo "VERSION_SUFFIX=beta" >> $GITHUB_ENV
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Extract metadata for Docker
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ghcr.io/${{ github.repository_owner }}/simpleobservability-dashboard
-          tags: |
-            type=raw,value=${{ env.VERSION_PREFIX }}-${{ env.VERSION_SUFFIX }}
-            type=raw,value=beta
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./code/WorldDomination.SimpleObservability.Dashboard/Dockerfile
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          platforms: linux/amd64,linux/arm64
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+    needs: build_and_test
+    uses: ./.github/workflows/reusable-docker.yml
+    with:
+      dockerfile_path: ./code/WorldDomination.SimpleObservability.Dashboard/Dockerfile
+      registry: ghcr.io
+      image_name: ${{ github.repository_owner }}/dashboard
+      push: true
+      tags_config: |
+        type=raw,value=${{ github.run_number }}.0.0-beta
+        type=raw,value=beta
+    secrets:
+      registry_password: ${{ secrets.GITHUB_TOKEN }}

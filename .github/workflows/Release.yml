@@ -21,71 +21,26 @@ env:
 jobs:
   build_and_test:
     name: Build and Test
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
-      - name: Calculate version from the Commit Tag
-        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v5
-        with:
-          cache: true
-          cache-dependency-path: '**/Directory.Packages.props'
-
-      - run: dotnet restore --verbosity minimal
-
-      - run: dotnet build --no-restore --configuration Release -p:ContinuousIntegrationBuild=true -p:DebugType=Embedded -p:version=${{ env.RELEASE_VERSION }}
-
-      - name: Run tests with code coverage
-        run: dotnet run --project code/WorldDomination.SimpleObservability.Dashboard.Tests/WorldDomination.SimpleObservability.Dashboard.Tests.csproj --configuration Release --no-build -- --coverage --coverage-output-format cobertura --coverage-output coverage.cobertura.xml
-
-      - name: Upload code coverage to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./code/WorldDomination.SimpleObservability.Dashboard.Tests/**/coverage.cobertura.xml
-          fail_ci_if_error: true
+    uses: ./.github/workflows/reusable-build-test.yml
+    with:
+      version: ${{ github.ref_name }}
+    secrets:
+      codecov_token: ${{ secrets.CODECOV_TOKEN }}
 
   build_and_push_docker:
     name: Build and Push Docker Image
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Extract metadata for Docker
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ secrets.DOCKERHUB_USERNAME }}/dashboard
-          tags: |
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}}
-            type=raw,value=latest
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./Dockerfile
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          platforms: linux/amd64,linux/arm64
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+    needs: build_and_test
+    uses: ./.github/workflows/reusable-docker.yml
+    with:
+      dockerfile_path: ./Dockerfile
+      registry: docker.io
+      image_name: ${{ secrets.DOCKERHUB_USERNAME }}/dashboard
+      push: true
+      tags_config: |
+        type=semver,pattern={{version}}
+        type=semver,pattern={{major}}.{{minor}}
+        type=semver,pattern={{major}}
+        type=raw,value=latest
+    secrets:
+      registry_username: ${{ secrets.DOCKERHUB_USERNAME }}
+      registry_password: ${{ secrets.DOCKERHUB_TOKEN }}
