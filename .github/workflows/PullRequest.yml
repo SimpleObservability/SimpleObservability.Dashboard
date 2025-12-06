@@ -23,8 +23,9 @@ jobs:
     uses: ./.github/workflows/reusable-docker.yml
     with:
       dockerfile_path: ./Dockerfile
-      registry: ''
-      image_name: ''
+      registry: ghcr.io
+      registry_username: ${{ github.repository_owner }}
+      image_name: ${{ github.repository_owner }}/dashboard
       push: false
     secrets:
-      registry_password: ''
+      registry_password: ${{ secrets.GITHUB_TOKEN }}

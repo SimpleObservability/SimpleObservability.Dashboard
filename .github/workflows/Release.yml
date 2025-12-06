@@ -34,7 +34,8 @@ jobs:
     with:
       dockerfile_path: ./Dockerfile
       registry: docker.io
-      image_name: ${{ secrets.DOCKERHUB_USERNAME }}/dashboard
+      registry_username: simpleobservability
+      image_name: simpleobservability/dashboard
       push: true
       tags_config: |
         type=semver,pattern={{version}}
@@ -42,5 +43,4 @@ jobs:
         type=semver,pattern={{major}}
         type=raw,value=latest
     secrets:
-      registry_username: ${{ secrets.DOCKERHUB_USERNAME }}
       registry_password: ${{ secrets.DOCKERHUB_TOKEN }}
