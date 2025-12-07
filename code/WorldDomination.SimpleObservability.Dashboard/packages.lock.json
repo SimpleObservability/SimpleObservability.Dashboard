@@ -38,9 +38,9 @@
       },
       "WorldDomination.SimpleObservability": {
         "type": "Direct",
-        "requested": "[1.0.0-beta03, )",
-        "resolved": "1.0.0-beta03",
-        "contentHash": "iGAlCI5yFYntaxv/Qwnoae9qG1HMcFRHicYKAxU3ltl65zOhN0kbHTgqvOhAkXrOPdlYI86RkJwTxLQ108LkdQ=="
+        "requested": "[1.0.0-beta04, )",
+        "resolved": "1.0.0-beta04",
+        "contentHash": "3HAPp3v9I/ZOcNqSqguOpJwsqnNLUwJhVVqb59L6zpaaQxn7PIFdwvRFI6fA2uKpH8bT6cEQchCDvUVLmEkT3Q=="
       },
       "Microsoft.Extensions.DependencyModel": {
         "type": "Transitive",
