@@ -32,7 +32,7 @@ jobs:
     needs: build_and_test
     uses: ./.github/workflows/reusable-docker.yml
     with:
-      dockerfile_path: ./Dockerfile
+      dockerfile_path: ./code/WorldDomination.SimpleObservability.Dashboard/Dockerfile
       registry: docker.io
       registry_username: simpleobservability
       image_name: simpleobservability/dashboard
