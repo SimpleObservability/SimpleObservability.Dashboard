@@ -6,7 +6,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## [Unreleased]
 - Nothing yet.
 
-## [1.0.0] - 2025-XX-XX
+## [1.1.0] - 2025-12-28
+### Updated
+- Docker image is references a "chiseled" version
+
+## [1.0.0] - 2025-12-08
 ### Added
 - Inital release.
+
 
