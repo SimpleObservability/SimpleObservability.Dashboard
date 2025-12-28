@@ -14,7 +14,7 @@ Update your "health" endpoints to return a specific schema which can then showca
 How is this different to all the many other 'health' dashboards like NewRelic, DataDog, Splunk, App Insights, etc?  
 This exposes your own service meta-data in an easy to read dashboard - not just if it's 'healthy' or 'unresponsive'.
 
-<img width="1496" height="722" alt="image" src="https://github.com/user-attachments/assets/5ab46b14-e8c2-4aee-8dea-0ef3d4160d65" />
+<img alt="image" src="https://i.imgur.com/p5zUd97.png" />
 
 </p>
 

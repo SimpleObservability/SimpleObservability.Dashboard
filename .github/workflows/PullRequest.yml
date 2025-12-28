@@ -22,7 +22,7 @@ jobs:
     needs: build_and_test
     uses: ./.github/workflows/reusable-docker.yml
     with:
-      dockerfile_path: ./Dockerfile
+      dockerfile_path: ./code/WorldDomination.SimpleObservability.Dashboard/Dockerfile
       registry: ghcr.io
       registry_username: ${{ github.repository_owner }}
       image_name: ${{ github.repository_owner }}/dashboard
