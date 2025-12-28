@@ -226,7 +226,7 @@ See [SCHEMA.md](docs/SCHEMA.md) for complete schema documentation.
 ✅ **FREE** for open source projects, students, non-profits, charities, and small businesses (<250 employees or <$1M revenue)  
 💼 **Commercial License** required for larger organisations
 
-📄 **[View License Details](LICENSE.md)** | 💰 **[View Pricing](docs/PRICING.md)**
+📄 **[View License Details](LICENSE.md)** | 💰 **[View Pricing](PRICING.md)**
 
 ## Features
 
@@ -238,4 +238,5 @@ See [SCHEMA.md](docs/SCHEMA.md) for complete schema documentation.
 - 📦 **NuGet Package**: Easy-to-use library for .NET services (other languages supported via JSON)
 - ⚙️ **Settings UI**: Manage configuration directly from the web interface
 - 📝 **JSON Editor**: Bulk import/export configuration with raw JSON editing support
+
 
