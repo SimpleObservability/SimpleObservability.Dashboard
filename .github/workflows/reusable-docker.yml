@@ -44,7 +44,7 @@ jobs:
 
       - name: Log in to Container Registry
         if: inputs.push
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ${{ inputs.registry }}
           username: ${{ inputs.registry_username }}
