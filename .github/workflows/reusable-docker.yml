@@ -53,7 +53,7 @@ jobs:
       - name: Extract metadata for Docker
         if: inputs.push && inputs.tags_config != ''
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: ${{ inputs.registry }}/${{ inputs.image_name }}
           tags: ${{ inputs.tags_config }}
