@@ -60,7 +60,7 @@ jobs:
 
       - name: Build and push Docker image (with metadata)
         if: inputs.push && inputs.tags_config != ''
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: ${{ inputs.dockerfile_path }}
@@ -73,7 +73,7 @@ jobs:
 
       - name: Build and push Docker image (with custom tags)
         if: inputs.push && inputs.tags_config == '' && inputs.custom_tags != ''
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: ${{ inputs.dockerfile_path }}
@@ -85,7 +85,7 @@ jobs:
 
       - name: Build Docker image (no push)
         if: ${{ !inputs.push }}
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: ${{ inputs.dockerfile_path }}
