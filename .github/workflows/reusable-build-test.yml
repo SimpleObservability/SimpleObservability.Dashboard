@@ -50,7 +50,7 @@ jobs:
         run: dotnet run --project code/WorldDomination.SimpleObservability.Dashboard.Tests/WorldDomination.SimpleObservability.Dashboard.Tests.csproj --configuration Release --no-build -- --coverage --coverage-output-format cobertura --coverage-output coverage.cobertura.xml
 
       - name: Upload code coverage to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           token: ${{ secrets.codecov_token }}
           files: ./code/WorldDomination.SimpleObservability.Dashboard.Tests/**/coverage.cobertura.xml
