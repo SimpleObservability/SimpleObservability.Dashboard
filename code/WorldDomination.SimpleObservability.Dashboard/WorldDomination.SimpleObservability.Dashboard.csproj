@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+    <PackageReference Include="Microsoft.OpenApi" />
     <PackageReference Include="Serilog.AspNetCore" />
     <PackageReference Include="Serilog.Settings.Configuration" />
     <PackageReference Include="WorldDomination.SimpleObservability" />
